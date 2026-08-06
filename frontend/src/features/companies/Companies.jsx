@@ -5,16 +5,18 @@ import {
   TextField,
   Box,
   CircularProgress,
-  Fab,
+  Button,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 
 import CompanyTable from "./CompanyTable";
+import CompanyDialog from "./CompanyDialog";
 import { useCompanies } from "./hooks";
 
 export default function Companies() {
   const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
 
   const {
     data: companies = [],
@@ -55,26 +57,37 @@ export default function Companies() {
         Companies
       </Typography>
 
-      <TextField
-        fullWidth
-        label="Search companies..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{ mb: 3 }}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        <TextField
+          fullWidth
+          label="Search companies..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpen(true)}
+        >
+          Add Company
+        </Button>
+      </Box>
 
       <CompanyTable companies={filteredCompanies} />
 
-      <Fab
-        color="primary"
-        sx={{
-          position: "fixed",
-          bottom: 30,
-          right: 30,
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      <CompanyDialog
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 }
