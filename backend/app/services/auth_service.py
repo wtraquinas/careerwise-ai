@@ -1,7 +1,11 @@
 from sqlalchemy.orm import Session
 
 from app.features.auth.models import User
-from app.core.security import hash_password
+from app.core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+)
 
 
 class AuthService:
@@ -29,3 +33,26 @@ class AuthService:
         db.refresh(user)
 
         return user
+
+    @staticmethod
+    def login(db: Session, email: str, password: str):
+
+        user = (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
+
+        if user is None:
+            return None
+
+        if not verify_password(password, user.hashed_password):
+            return None
+
+        token = create_access_token(
+            {
+                "sub": user.email,
+            }
+        )
+
+        return token

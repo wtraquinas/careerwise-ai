@@ -41,7 +41,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    from app.config import settings
+    from app.core.config import settings
 
     config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
