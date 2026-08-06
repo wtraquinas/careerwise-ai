@@ -5,7 +5,6 @@ const api = axios.create({
 });
 
 export const CompanyAPI = {
-
   getAll() {
     return api.get("/companies/");
   },
@@ -13,7 +12,6 @@ export const CompanyAPI = {
   create(company) {
     return api.post("/companies/", company);
   },
-
 };
 
 export default api;

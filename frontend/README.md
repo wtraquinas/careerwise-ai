@@ -15,12 +15,12 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
-
 ---
+
 ---
 
 ## GitHub Codespaces Notes
- 
+
 If the frontend cannot reach the backend:
 
 - Ensure port 5173 is Public
@@ -29,11 +29,14 @@ If the frontend cannot reach the backend:
 - Restart Vite after changing .env
 
 Symptoms:
+
 - 302 Found
-github.dev/pf-signin
+  github.dev/pf-signin
 
 Cause:
+
 - Codespaces forwarded port is Private.
 
 Solution:
+
 - Change the forwarded port visibility to Public.
