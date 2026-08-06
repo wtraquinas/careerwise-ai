@@ -1,7 +1,7 @@
-import Companies from "./pages/Companies";
+import AppRouter from "./app/router/AppRouter";
 
 function App() {
-  return <Companies />;
+    return <AppRouter />;
 }
 
 export default App;
