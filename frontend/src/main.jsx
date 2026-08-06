@@ -9,6 +9,8 @@ import App from "./App";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
+    <AppQueryProvider>
+        <App />
+    </AppQueryProvider>
   </ThemeProvider>
 );
