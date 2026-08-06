@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.shared.database.session import SessionLocal
-
 from app.api.auth import router as auth_router
+from app.api.companies import router as company_router
+from app.shared.database.session import SessionLocal
 
 app = FastAPI(
     title="CareerWise API",
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(company_router)
 
 @app.get("/api/v1/health")
 def health():
