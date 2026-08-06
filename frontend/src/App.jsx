@@ -7,9 +7,11 @@ function App() {
   useEffect(() => {
     api.get("/health")
       .then((res) => {
+        console.log("Response:", res.data);
         setStatus(res.data.status);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err);
         setStatus("Offline");
       });
   }, []);
