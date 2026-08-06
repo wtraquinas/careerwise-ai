@@ -1,41 +1,14 @@
-import { useEffect, useState } from "react";
-import { CompanyAPI } from "../../shared/services/api";
+import { DataGrid } from "@mui/x-data-grid";
+import { companyColumns } from "./companyColumns";
 
-export default function CompanyTable() {
-  const [companies, setCompanies] = useState([]);
-
-  useEffect(() => {
-    const loadCompanies = async () => {
-      try {
-        const response = await CompanyAPI.getAll();
-        setCompanies(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    loadCompanies();
-  }, []);
-
+export default function CompanyTable({ companies }) {
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Industry</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {companies.map((company) => (
-          <tr key={company.id}>
-            <td>{company.name}</td>
-            <td>{company.industry}</td>
-            <td>{company.location}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <DataGrid
+      rows={companies}
+      columns={companyColumns}
+      pageSizeOptions={[5, 10]}
+      autoHeight
+      disableRowSelectionOnClick
+    />
   );
 }

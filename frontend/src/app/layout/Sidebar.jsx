@@ -8,6 +8,9 @@ import {
 
 import { Link } from "react-router-dom";
 
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import BusinessIcon from "@mui/icons-material/Business";
+
 const drawerWidth = 240;
 
 export default function Sidebar() {
@@ -26,11 +29,13 @@ export default function Sidebar() {
 
       <List>
         <ListItemButton component={Link} to="/">
-          <ListItemText primary="Dashboard" />
+            <DashboardIcon sx={{ mr: 2 }} />
+            <ListItemText primary="Dashboard" />
         </ListItemButton>
 
         <ListItemButton component={Link} to="/companies">
-          <ListItemText primary="Companies" />
+            <BusinessIcon sx={{ mr: 2 }} />
+            <ListItemText primary="Companies" />
         </ListItemButton>
       </List>
     </Drawer>
