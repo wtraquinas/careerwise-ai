@@ -4,6 +4,8 @@ from sqlalchemy import text
 
 from app.shared.database.session import SessionLocal
 
+from app.api.auth import router as auth_router
+
 app = FastAPI(
     title="CareerWise API",
     version="1.0.0"
@@ -17,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 
 @app.get("/api/v1/health")
 def health():

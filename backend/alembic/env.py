@@ -59,7 +59,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-from app.config import settings
+from app.core.config import settings
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
