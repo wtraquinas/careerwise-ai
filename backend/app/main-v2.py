@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="CareerWise API")
+app = FastAPI(
+    title="CareerWise API",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,5 +19,5 @@ def health():
     return {
         "success": True,
         "status": "healthy",
-        "version": "1.0.0"
+        "version": "1.0.0",
     }
