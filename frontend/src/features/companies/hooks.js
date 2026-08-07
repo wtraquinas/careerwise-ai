@@ -12,3 +12,25 @@ export function useCompanies() {
         },
     });
 }
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export function useCreateCompany() {
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+
+        mutationFn: CompanyAPI.create,
+
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+                queryKey: ["companies"],
+            });
+
+        },
+
+    });
+
+}
