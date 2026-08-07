@@ -11,12 +11,12 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[CompanyResponse])
+@router.get("", response_model=list[CompanyResponse])
 def get_companies(db: Session = Depends(get_db)):
     return CompanyService.get_all(db)
 
 
-@router.post("/", response_model=CompanyResponse)
+@router.post("", response_model=CompanyResponse)
 def create_company(
     company: CompanyCreate,
     db: Session = Depends(get_db),

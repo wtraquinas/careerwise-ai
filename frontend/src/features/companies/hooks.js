@@ -31,6 +31,10 @@ export function useCreateCompany() {
                 queryKey: ["companies"],
             });
 
+            queryClient.invalidateQueries({
+                queryKey: ["dashboard"],
+            });
+
         },
 
     });
@@ -38,11 +42,11 @@ export function useCreateCompany() {
 }
 
 export function useDashboardStats() {
-  return useQuery({
-    queryKey: ["dashboard"],
-    queryFn: async () => {
-      const response = await DashboardAPI.stats();
-      return response.data;
-    },
-  });
+    return useQuery({
+        queryKey: ["dashboard"],
+        queryFn: async () => {
+            const response = await DashboardAPI.getStats();
+            return response.data;
+        },
+    });
 }

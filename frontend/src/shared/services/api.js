@@ -1,21 +1,125 @@
 import axios from "axios";
 
+// -------------------------
+// Axios Instance
+// -------------------------
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+    baseURL: import.meta.env.VITE_API_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-export const CompanyAPI = {
-  getAll() {
-    return api.get("/companies/");
-  },
+console.log(import.meta.env.VITE_API_URL);
+// -------------------------
+// Attach JWT Token
+// -------------------------
 
-  create(company) {
-    return api.post("/companies/", company);
-  },
+api.interceptors.request.use((config) => {
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+
+});
+
+// -------------------------
+// Auth API
+// -------------------------
+
+export const AuthAPI = {
+
+    login(data) {
+        return api.post("/auth/login", data);
+    },
+
+    register(data) {
+        return api.post("/auth/register", data);
+    },
+
 };
+
+// -------------------------
+// Dashboard API
+// -------------------------
 
 export const DashboardAPI = {
-  stats: () => api.get("/dashboard/stats"),
+
+    getStats() {
+        return api.get("/dashboard/stats");
+    },
+
 };
+
+// -------------------------
+// Company API
+// -------------------------
+
+export const CompanyAPI = {
+
+    getAll() {
+        return api.get("/companies");
+    },
+
+    getById(id) {
+        return api.get(`/companies/${id}`);
+    },
+
+    create(data) {
+        return api.post("/companies", data);
+    },
+
+    update(id, data) {
+        return api.put(`/companies/${id}`, data);
+    },
+
+    delete(id) {
+        return api.delete(`/companies/${id}`);
+    },
+
+};
+
+// -------------------------
+// Application API
+// -------------------------
+
+export const ApplicationAPI = {
+
+    getAll() {
+        return api.get("/applications");
+    },
+
+};
+
+// -------------------------
+// Recruiter API
+// -------------------------
+
+export const RecruiterAPI = {
+
+    getAll() {
+        return api.get("/recruiters");
+    },
+
+};
+
+// -------------------------
+// Task API
+// -------------------------
+
+export const TaskAPI = {
+
+    getAll() {
+        return api.get("/tasks");
+    },
+
+};
+
+// -------------------------
 
 export default api;

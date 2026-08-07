@@ -1,123 +1,156 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Stack,
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { companySchema } from "./validation";
+import { companySchema } from "./companySchema";
 import { useCreateCompany } from "./hooks";
 
 export default function CompanyDialog({
-  open,
-  onClose,
+    open,
+    onClose,
 }) {
-  const createCompany = useCreateCompany();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(companySchema),
-  });
+    const createCompany = useCreateCompany();
 
-  const onSubmit = (data) => {
-    createCompany.mutate(data, {
-      onSuccess: () => {
-        reset();
-        onClose();
-      },
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(companySchema),
+
+        defaultValues: {
+            name: "",
+            website: "",
+            industry: "",
+            location: "",
+            notes: "",
+        },
     });
-  };
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-    >
-      <form onSubmit={handleSubmit(onSubmit)}>
+    const onSubmit = (data) => {
 
-        <DialogTitle>
-          Add Company
-        </DialogTitle>
+        createCompany.mutate(data, {
 
-        <DialogContent>
+            onSuccess: () => {
 
-          <TextField
+                reset();
+
+                onClose();
+
+            },
+
+        });
+
+    };
+
+    return (
+
+        <Dialog
+            open={open}
+            onClose={onClose}
             fullWidth
-            margin="normal"
-            label="Company Name"
-            {...register("name")}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
+            maxWidth="sm"
+        >
 
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Website"
-            {...register("website")}
-            error={!!errors.website}
-            helperText={errors.website?.message}
-          />
+            <form onSubmit={handleSubmit(onSubmit)}>
 
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Industry"
-            {...register("industry")}
-            error={!!errors.industry}
-            helperText={errors.industry?.message}
-          />
+                <DialogTitle>
 
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Location"
-            {...register("location")}
-            error={!!errors.location}
-            helperText={errors.location?.message}
-          />
+                    Add Company
 
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            margin="normal"
-            label="Notes"
-            {...register("notes")}
-          />
+                </DialogTitle>
 
-        </DialogContent>
+                <DialogContent>
 
-        <DialogActions>
+                    <Stack spacing={2} sx={{ mt: 1 }}>
 
-          <Button
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
+                        <TextField
+                            label="Company Name"
+                            fullWidth
+                            {...register("name")}
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
 
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={createCompany.isPending}
-          >
-            Save
-          </Button>
+                        <TextField
+                            label="Website"
+                            fullWidth
+                            {...register("website")}
+                            error={!!errors.website}
+                            helperText={errors.website?.message}
+                        />
 
-        </DialogActions>
+                        <TextField
+                            label="Industry"
+                            fullWidth
+                            {...register("industry")}
+                            error={!!errors.industry}
+                            helperText={errors.industry?.message}
+                        />
 
-      </form>
-    </Dialog>
-  );
+                        <TextField
+                            label="Location"
+                            fullWidth
+                            {...register("location")}
+                            error={!!errors.location}
+                            helperText={errors.location?.message}
+                        />
+
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            {...register("notes")}
+                            error={!!errors.notes}
+                            helperText={errors.notes?.message}
+                        />
+
+                    </Stack>
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button
+                        onClick={() => {
+
+                            reset();
+
+                            onClose();
+
+                        }}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={createCompany.isPending}
+                    >
+                        {createCompany.isPending
+                            ? "Saving..."
+                            : "Save"}
+                    </Button>
+
+                </DialogActions>
+
+            </form>
+
+        </Dialog>
+
+    );
+
 }
