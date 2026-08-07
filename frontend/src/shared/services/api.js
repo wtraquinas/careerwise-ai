@@ -101,9 +101,12 @@ export const CompanyAPI = {
 // -------------------------
 
 export const ApplicationAPI = {
-
     getAll() {
         return api.get("/applications/");
+    },
+
+    getById(id) {
+        return api.get(`/applications/${id}`);
     },
 
     create(data) {
@@ -117,7 +120,6 @@ export const ApplicationAPI = {
     delete(id) {
         return api.delete(`/applications/${id}`);
     },
-
 };
 
 // -------------------------

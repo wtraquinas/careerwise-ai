@@ -38,3 +38,28 @@ export function useCreateApplication() {
     });
 
 }
+
+export function useUpdateApplication() {
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+
+        mutationFn: ({ id, data }) =>
+            ApplicationAPI.update(id, data),
+
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+                queryKey: ["applications"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["dashboard"],
+            });
+
+        },
+
+    });
+
+}

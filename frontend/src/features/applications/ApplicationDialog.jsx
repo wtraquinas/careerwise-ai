@@ -12,16 +12,25 @@ import {
 } from "@mui/material";
 
 import { applicationSchema } from "./applicationSchema";
-import { useCreateApplication } from "./hooks";
 import { useCompanies } from "../companies/hooks";
+
+import { useEffect } from "react";
+
+import {
+    useCreateApplication,
+    useUpdateApplication,
+} from "./hooks";
 
 export default function ApplicationDialog({
     open,
     onClose,
+    application,
 }) {
     const { data: companies = [] } = useCompanies();
 
     const createApplication = useCreateApplication();
+
+    const updateApplication = useUpdateApplication();
 
     const {
         control,
@@ -41,8 +50,52 @@ export default function ApplicationDialog({
         },
     });
 
+    useEffect(() => {
+
+        if (application) {
+
+            reset({
+                company_id: application.company_id,
+                position: application.position,
+                status: application.status,
+                salary: application.salary,
+                job_url: application.job_url,
+                applied_date: application.applied_date,
+                notes: application.notes,
+            });
+
+        } else {
+
+            reset({
+                company_id: "",
+                position: "",
+                status: "Applied",
+                salary: "",
+                job_url: "",
+                applied_date: "",
+                notes: "",
+            });
+
+        }
+
+    }, [application, reset]);
+
     const onSubmit = async (data) => {
-        await createApplication.mutateAsync(data);
+        if (application) {
+
+            await updateApplication.mutateAsync({
+
+                id: application.id,
+
+                data,
+
+            });
+
+        } else {
+
+            await createApplication.mutateAsync(data);
+
+        }
 
         reset();
 
@@ -57,7 +110,9 @@ export default function ApplicationDialog({
             maxWidth="md"
         >
             <DialogTitle>
-                Add Application
+                {application
+                    ? "Edit Application"
+                    : "Add Application"}
             </DialogTitle>
 
             <DialogContent>
@@ -189,7 +244,9 @@ export default function ApplicationDialog({
                     variant="contained"
                     onClick={handleSubmit(onSubmit)}
                 >
-                    Save
+                    {application
+                        ? "Update"
+                        : "Save"}
                 </Button>
 
             </DialogActions>

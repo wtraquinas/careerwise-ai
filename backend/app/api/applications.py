@@ -11,12 +11,12 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=list[ApplicationResponse])
+@router.get("/", response_model=list[ApplicationResponse])
 def get_applications(db: Session = Depends(get_db)):
     return ApplicationService.get_all(db)
 
 
-@router.post("", response_model=ApplicationResponse)
+@router.post("/", response_model=ApplicationResponse)
 def create_application(
     application: ApplicationCreate,
     db: Session = Depends(get_db),
