@@ -122,7 +122,7 @@ export default function AICoach() {
             direction="row"
             spacing={1}
             useFlexGap
-            flexWrap="wrap"
+            sx={{ flexWrap: "wrap" }}
             sx={{ mb: 4 }}
           >
             {suggestedPrompts.map((item) => (
