@@ -103,7 +103,19 @@ export const CompanyAPI = {
 export const ApplicationAPI = {
 
     getAll() {
-        return api.get("/applications");
+        return api.get("/applications/");
+    },
+
+    create(data) {
+        return api.post("/applications/", data);
+    },
+
+    update(id, data) {
+        return api.put(`/applications/${id}`, data);
+    },
+
+    delete(id) {
+        return api.delete(`/applications/${id}`);
     },
 
 };
