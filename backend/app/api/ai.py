@@ -27,6 +27,7 @@ class ChatResponse(BaseModel):
 # -------------------------
 # AI Chat Endpoint
 # -------------------------
+from app.services.ai_service import AIService
 
 @router.post(
     "/chat",
@@ -34,6 +35,8 @@ class ChatResponse(BaseModel):
 )
 def chat(request: ChatRequest):
 
+    answer = AIService.chat(request.message)
+
     return ChatResponse(
-        answer=f"You said: '{request.message}'. AI Coach coming soon 🚀"
+        answer=answer,
     )
