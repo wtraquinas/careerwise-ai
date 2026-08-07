@@ -1,33 +1,23 @@
 from fastapi import APIRouter
+
 from pydantic import BaseModel
+
+from app.services.ai_service import AIService
 
 
 router = APIRouter(
     prefix="/api/v1/ai",
-    tags=["AI Coach"],
+    tags=["AI"],
 )
 
-
-# -------------------------
-# Request Schema
-# -------------------------
 
 class ChatRequest(BaseModel):
     message: str
 
 
-# -------------------------
-# Response Schema
-# -------------------------
-
 class ChatResponse(BaseModel):
     answer: str
 
-
-# -------------------------
-# AI Chat Endpoint
-# -------------------------
-from app.services.ai_service import AIService
 
 @router.post(
     "/chat",
@@ -37,6 +27,4 @@ def chat(request: ChatRequest):
 
     answer = AIService.chat(request.message)
 
-    return ChatResponse(
-        answer=answer,
-    )
+    return ChatResponse(answer=answer)
