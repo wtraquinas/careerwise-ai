@@ -10,6 +10,16 @@ from app.api.dashboard import router as dashboard_router
 
 from app.api.ai import router as ai_router
 
+from app.api.applications import router as application_router
+
+from app.shared.database.base import Base
+from app.shared.database.session import engine
+
+# Import all models so SQLAlchemy registers them
+from app.shared.database.models import *
+
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
     title="CareerWise API",
     version="1.0.0"
@@ -26,11 +36,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(company_router)
 app.include_router(dashboard_router)
-
-app.include_router(auth_router)
-app.include_router(company_router)
-app.include_router(dashboard_router)
 app.include_router(ai_router)
+app.include_router(application_router)
 
 @app.get("/api/v1/health")
 def health():
