@@ -63,3 +63,27 @@ export function useUpdateApplication() {
     });
 
 }
+
+export function useDeleteApplication() {
+
+  const queryClient = useQueryClient();
+
+  return useMutation({
+
+    mutationFn: ApplicationAPI.delete,
+
+    onSuccess: () => {
+
+      queryClient.invalidateQueries({
+        queryKey: ["applications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
+
+    },
+
+  });
+
+}

@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-
 import { CompanyAPI } from "../../shared/services/api";
 
 import { DashboardAPI } from "../../shared/services/api";
@@ -17,7 +15,7 @@ export function useCompanies() {
 
 import toast from "react-hot-toast";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useCreateCompany() {
     const queryClient = useQueryClient();
@@ -66,11 +64,22 @@ export function useUpdateCompany() {
 }
 
 
+
+export function useDashboardStats() {
+    return useQuery({
+        queryKey: ["dashboard"],
+        queryFn: async () => {
+            const response = await DashboardAPI.getStats();
+            return response.data;
+        },
+    });
+}
+
 export function useDeleteCompany() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: CompanyAPI.delete,
+        mutationFn: (id) => CompanyAPI.delete(id),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -80,23 +89,6 @@ export function useDeleteCompany() {
             queryClient.invalidateQueries({
                 queryKey: ["dashboard"],
             });
-
-            toast.success("Company deleted");
-        },
-
-        onError: () => {
-            toast.error("Unable to delete company");
-        },
-    });
-}
-
-
-export function useDashboardStats() {
-    return useQuery({
-        queryKey: ["dashboard"],
-        queryFn: async () => {
-            const response = await DashboardAPI.getStats();
-            return response.data;
         },
     });
 }

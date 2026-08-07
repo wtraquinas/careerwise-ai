@@ -10,13 +10,21 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 
+import { useSnackbar } from "notistack";
+import DeleteDialog from "../../shared/components/DeleteDialog";
+
 import CompanyTable from "./CompanyTable";
 import CompanyDialog from "./CompanyDialog";
-import { useCompanies } from "./hooks";
+import {
+    useCompanies,
+    useDeleteCompany,
+} from "./hooks";
 
 export default function Companies() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const deleteMutation = useDeleteCompany();
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     data: companies = [],
@@ -31,8 +39,32 @@ export default function Companies() {
   const [selectedCompany, setSelectedCompany] =
     useState(null);
   
+  const handleDeleteClick = (company) => {
+      setDeleteCompany(company);
+  };
+
+  const handleConfirmDelete = async () => {
+      try {
+          await deleteMutation.mutateAsync(deleteCompany.id);
+
+          setDeleteCompany(null);
+
+          enqueueSnackbar("Company deleted successfully", {
+              variant: "success",
+          });
+
+      } catch (error) {
+          console.error(error);
+
+          enqueueSnackbar("Failed to delete company", {
+              variant: "error",
+          });
+      }
+  };
+  
   const [deleteCompany, setDeleteCompany] =
     useState(null);
+    
 
 
   if (isLoading) {
@@ -86,18 +118,36 @@ export default function Companies() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setOpen(true)}
+          onClick={() => {
+              setSelectedCompany(null);
+              setOpen(true);
+          }}
         >
           Add Company
         </Button>
       </Box>
 
-      <CompanyTable companies={filteredCompanies} />
+      <CompanyTable
+          companies={filteredCompanies}
+          onEdit={(company) => {
+              setSelectedCompany(company);
+              setOpen(true);
+          }}
+          onDelete={handleDeleteClick}
+      />
 
       <CompanyDialog
         open={open}
         onClose={() => setOpen(false)}
         company={selectedCompany}
+      />
+
+      <DeleteDialog
+          open={Boolean(deleteCompany)}
+          title="Delete Company"
+          description={`Delete "${deleteCompany?.name}"?`}
+          onClose={() => setDeleteCompany(null)}
+          onConfirm={handleConfirmDelete}
       />
     </>
   );

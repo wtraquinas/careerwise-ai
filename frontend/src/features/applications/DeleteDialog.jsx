@@ -1,3 +1,4 @@
+{/*
 <DeleteDialog
     open={Boolean(deleteApplication)}
     title="Delete Application"
@@ -5,3 +6,5 @@
     // onConfirm={...}
     // onCancel={...}
 />
+
+*/}

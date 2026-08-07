@@ -10,11 +10,20 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 
-import { useApplications } from "./hooks";
+import {
+    useApplications,
+    useCreateApplication,
+    useUpdateApplication,
+    useDeleteApplication,
+} from "./hooks";
+
 import { useCompanies } from "../companies/hooks";
 
 import ApplicationTable from "./ApplicationTable";
 import ApplicationDialog from "./ApplicationDialog";
+
+import DeleteDialog from "../../shared/components/DeleteDialog";
+import AppSnackbar from "../../shared/components/AppSnackbar";
 
 export default function Applications() {
 
@@ -24,8 +33,7 @@ export default function Applications() {
 
     const [selectedApplication, setSelectedApplication] = useState(null);
 
-    // We'll add this when implementing DeleteDialog
-    // const [deleteApplication, setDeleteApplication] = useState(null);
+    const [deleteApplication, setDeleteApplication] = useState(null);
 
     const {
         data: applications = [],
@@ -36,6 +44,44 @@ export default function Applications() {
     const {
         data: companies = [],
     } = useCompanies();
+
+
+    const [snackbar, setSnackbar] = useState({
+      open: false,
+      message: "",
+      severity: "success",
+    });
+    
+    const createMutation = useCreateApplication();
+    const updateMutation = useUpdateApplication();
+    const deleteMutation = useDeleteApplication();
+
+    const handleDeleteClick = (application) => {
+        setDeleteApplication(application);
+    };
+
+    const handleConfirmDelete = async () => {
+      try {
+        await deleteMutation.mutateAsync(deleteApplication.id);
+
+        setSnackbar({
+          open: true,
+          message: "Application deleted successfully",
+          severity: "success",
+        });
+
+        setDeleteApplication(null);
+
+      } catch {
+
+        setSnackbar({
+          open: true,
+          message: "Failed to delete application",
+          severity: "error",
+        });
+
+      }
+    };
 
     // -----------------------------
     // Create company lookup
@@ -56,9 +102,51 @@ export default function Applications() {
     }, [companies]);
 
     // -----------------------------
-    // Search
+    // Handle Save
     // -----------------------------
 
+    const handleSave = async (data) => {
+        try {
+            if (selectedApplication) {
+                await updateMutation.mutateAsync({
+                    id: selectedApplication.id,
+                    data,
+                });
+
+                setSnackbar({
+                    open: true,
+                    message: "Application updated successfully",
+                    severity: "success",
+                });
+
+            } else {
+                await createMutation.mutateAsync(data);
+
+                setSnackbar({
+                    open: true,
+                    message: "Application created successfully",
+                    severity: "success",
+                });
+            }
+
+            setOpen(false);
+            setSelectedApplication(null);
+
+        } catch (error) {
+            console.error(error);
+
+            setSnackbar({
+                open: true,
+                message: "Failed to save application",
+                severity: "error",
+            });
+        }
+    };
+
+
+    // -----------------------------
+    // Search
+    // -----------------------------
     const filteredApplications = applications.filter((application) => {
 
         const companyName =
@@ -174,27 +262,49 @@ export default function Applications() {
                     Add Application
                 </Button>
 
+                
+
             </Box>
 
             <ApplicationTable
                 applications={filteredApplications}
                 companyMap={companyMap}
                 onEdit={(application) => {
-
                     setSelectedApplication(application);
-
                     setOpen(true);
-
                 }}
-                onDelete={(application) => {
-                    console.log("Delete", application);
-                }}
+                onDelete={handleDeleteClick}
             />
 
             <ApplicationDialog
                 open={open}
                 onClose={() => setOpen(false)}
                 application={selectedApplication}
+                onSave={handleSave}
+            />
+
+            <DeleteDialog
+              open={Boolean(deleteApplication)}
+              title="Delete Application"
+              itemName={
+                deleteApplication?.position || ""
+              }
+              description="This action cannot be undone."
+              onClose={() => setDeleteApplication(null)}
+              onConfirm={handleConfirmDelete}
+              loading={deleteMutation.isPending}
+            />
+
+            <AppSnackbar
+              open={snackbar.open}
+              message={snackbar.message}
+              severity={snackbar.severity}
+              onClose={() =>
+                setSnackbar({
+                  ...snackbar,
+                  open: false,
+                })
+              }
             />
 
             {/*
