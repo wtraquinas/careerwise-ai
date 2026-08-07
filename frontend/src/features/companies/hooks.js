@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { CompanyAPI } from "../../shared/services/api";
 
+import { DashboardAPI } from "../../shared/services/api";
+
 export function useCompanies() {
     return useQuery({
         queryKey: ["companies"],
@@ -33,4 +35,14 @@ export function useCreateCompany() {
 
     });
 
+}
+
+export function useDashboardStats() {
+  return useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const response = await DashboardAPI.stats();
+      return response.data;
+    },
+  });
 }

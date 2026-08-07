@@ -14,4 +14,8 @@ export const CompanyAPI = {
   },
 };
 
+export const DashboardAPI = {
+  stats: () => api.get("/dashboard/stats"),
+};
+
 export default api;
