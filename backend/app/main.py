@@ -8,6 +8,8 @@ from app.shared.database.session import SessionLocal
 
 from app.api.dashboard import router as dashboard_router
 
+from app.api.ai import router as ai_router
+
 app = FastAPI(
     title="CareerWise API",
     version="1.0.0"
@@ -24,6 +26,11 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(company_router)
 app.include_router(dashboard_router)
+
+app.include_router(auth_router)
+app.include_router(company_router)
+app.include_router(dashboard_router)
+app.include_router(ai_router)
 
 @app.get("/api/v1/health")
 def health():
