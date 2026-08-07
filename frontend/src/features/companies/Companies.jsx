@@ -28,12 +28,22 @@ export default function Companies() {
     company.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const [selectedCompany, setSelectedCompany] =
+    useState(null);
+  
+  const [deleteCompany, setDeleteCompany] =
+    useState(null);
+
+
   if (isLoading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        mt={5}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: 300,
+        }}
       >
         <CircularProgress />
       </Box>
@@ -87,6 +97,7 @@ export default function Companies() {
       <CompanyDialog
         open={open}
         onClose={() => setOpen(false)}
+        company={selectedCompany}
       />
     </>
   );

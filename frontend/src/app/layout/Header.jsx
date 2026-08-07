@@ -22,9 +22,11 @@ export default function Header() {
         </Typography>
 
         <Box
-          display="flex"
-          alignItems="center"
-          gap={2}
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+            }}
         >
           <Typography>
             Antonio

@@ -22,3 +22,35 @@ def create_company(
     db: Session = Depends(get_db),
 ):
     return CompanyService.create(db, company)
+
+@router.get("/{company_id}", response_model=CompanyResponse)
+def get_company(
+    company_id: int,
+    db: Session = Depends(get_db),
+):
+    return CompanyService.get_by_id(db, company_id)
+
+
+@router.put("/{company_id}", response_model=CompanyResponse)
+def update_company(
+    company_id: int,
+    company: CompanyCreate,
+    db: Session = Depends(get_db),
+):
+    return CompanyService.update(
+        db,
+        company_id,
+        company,
+    )
+
+
+@router.delete("/{company_id}")
+def delete_company(
+    company_id: int,
+    db: Session = Depends(get_db),
+):
+    CompanyService.delete(db, company_id)
+
+    return {
+        "success": True,
+    }

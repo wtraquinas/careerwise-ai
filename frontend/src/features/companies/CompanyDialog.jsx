@@ -17,6 +17,7 @@ import { useCreateCompany } from "./hooks";
 export default function CompanyDialog({
     open,
     onClose,
+    company,
 }) {
 
     const createCompany = useCreateCompany();

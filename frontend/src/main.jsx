@@ -13,12 +13,18 @@ import AppRouter from "./app/router/AppRouter";
 
 import { Toaster } from "react-hot-toast";
 
+import { SnackbarProvider } from "notistack";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
     <AppQueryProvider>
 
-        <AppRouter />
+        <SnackbarProvider>
+
+            <AppRouter />
+
+        </SnackbarProvider>
 
         <Toaster position="top-right" />
 
