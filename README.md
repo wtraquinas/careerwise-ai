@@ -546,7 +546,8 @@ The next major milestone is to turn those recommendations into **structured AI C
 ---
 
 ## Author
+Antonio Traquinas - https://github.com/wtraquinas
 
-Built as an AI Engineering portfolio project.
+Built as an AI Engineering Bootcamp (portfolio) Final Project.
 
 **CareerWise AI — turning a job search into a smarter career workflow.**
