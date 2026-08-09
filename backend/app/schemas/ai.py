@@ -7,3 +7,7 @@ class AIChatRequest(BaseModel):
 
 class AIChatResponse(BaseModel):
     answer: str
+
+
+class AIAnalysisRequest(BaseModel):
+    pass

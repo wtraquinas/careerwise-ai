@@ -2,9 +2,14 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
-from app.schemas.ai import AIChatRequest, AIChatResponse
+
 from app.services.ai_service import AIService
 
+from app.schemas.ai import (
+    AIChatRequest,
+    AIAnalysisRequest,
+    AIChatResponse,
+)
 
 router = APIRouter(
     prefix="/api/v1/ai",
@@ -25,3 +30,10 @@ def chat(
     return {
         "answer": answer,
     }
+
+@router.post("/analyze")
+def analyze_career(
+    request: AIAnalysisRequest,
+    db: Session = Depends(get_db),
+):
+    return AIService.analyze(db)

@@ -65,6 +65,8 @@ Notes: {application.notes or "None"}
         message: str,
     ) -> str:
 
+    
+
         career_context = (
             AIService.get_career_context(db)
         )
@@ -88,6 +90,13 @@ If the available data does not contain the information
 needed to answer a question, say so clearly.
 
 Be practical, concise and actionable.
+
+Write naturally and clearly.
+
+Use proper spacing between words.
+Do not concatenate words.
+Use short paragraphs and bullet points where appropriate.
+Do not include unnecessary meta-commentary.
 
 CURRENT CAREERWISE DATA
 -----------------------
@@ -135,6 +144,91 @@ use the actual CareerWise data above.
             ],
             max_completion_tokens=3000,
         )
+
+
+    @staticmethod
+    def analyze(db: Session) -> dict:
+
+        career_context = AIService.get_career_context(db)
+
+        system_prompt = f"""
+    You are CareerWise AI Career Insights.
+
+    You analyze a user's current job application pipeline
+    and provide practical career recommendations.
+
+    Use ONLY the CareerWise data provided below when making
+    claims about the user's applications.
+
+    Do not invent applications, companies, statuses, dates,
+    salaries, recruiter interactions, or other career data.
+
+    Analyze:
+
+    - Application status
+    - Application dates
+    - Companies
+    - Positions
+    - Salary information
+    - Notes
+
+    Identify which applications deserve the most attention.
+
+    Return your answer as valid JSON with exactly this structure:
+
+    {{
+        "summary": "Short overall assessment of the current pipeline.",
+        "priorities": [
+            {{
+                "application_id": 0,
+                "priority": "high",
+                "reason": "Why this application deserves attention.",
+                "action": "What the user should do next."
+            }}
+        ],
+        "recommendations": [
+            "Practical recommendation 1",
+            "Practical recommendation 2"
+        ]
+    }}
+
+    Priority must be one of:
+
+    - high
+    - medium
+    - low
+
+    Keep the analysis concise and practical.
+
+    ## CURRENT CAREERWISE DATA
+
+    {career_context}
+    """
+
+        response = client.chat.completions.create(
+            model="gpt-5-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                }
+            ],
+            max_completion_tokens=1500,
+            response_format={
+                "type": "json_object"
+            },
+        )
+
+        content = response.choices[0].message.content
+
+        if not content:
+            raise ValueError("OpenAI returned an empty analysis.")
+
+        import json
+
+        return json.loads(content)
+
+
 
         print("========== OPENAI RESPONSE ==========")
         print(response)
