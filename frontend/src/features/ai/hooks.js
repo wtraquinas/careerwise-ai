@@ -11,3 +11,9 @@ export function useAIChat() {
     });
 
 }
+
+export function useAIAnalysis() {
+    return useMutation({
+        mutationFn: AIAPI.analyze,
+    });
+}

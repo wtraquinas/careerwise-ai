@@ -32,11 +32,9 @@ api.interceptors.request.use((config) => {
 // AI API
 // -------------------------
 export const AIAPI = {
-
-    chat(data) {
-        return api.post("/ai/chat", data);
+    analyze() {
+        return api.post("/ai/analyze", {});
     },
-
 };
 
 
