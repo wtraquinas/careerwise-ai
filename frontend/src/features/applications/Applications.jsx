@@ -29,6 +29,8 @@ import {
     useAIApplicationAnalysis,
 } from "../ai/hooks";
 
+import AIAnalysisDialog from "../ai/AIAnalysisDialog";
+
 export default function Applications() {
 
     const [search, setSearch] = useState("");
@@ -87,6 +89,30 @@ export default function Applications() {
       }
     };
 
+    const [analysisApplication, setAnalysisApplication] =
+        useState(null);
+
+    const [analysis, setAnalysis] = useState(null);
+
+    const handleAnalyze = async (application) => {
+        setAnalysisApplication(application);
+        setAnalysis(null);
+
+        try {
+            const response =
+                await applicationAnalysisMutation.mutateAsync(
+                    application.id
+                );
+
+            setAnalysis(response.data);
+
+        } catch (error) {
+            console.error(
+                "Application analysis failed:",
+                error
+            );
+        }
+    };
 
     const applicationAnalysisMutation =
     useAIApplicationAnalysis();
@@ -277,18 +303,30 @@ export default function Applications() {
             <ApplicationTable
                 applications={filteredApplications}
                 companyMap={companyMap}
+
                 onEdit={(application) => {
                     setSelectedApplication(application);
                     setOpen(true);
                 }}
+
                 onDelete={handleDeleteClick}
-                onAnalyze={(application) => {
-                    applicationAnalysisMutation.mutate(
-                        application.id
-                    );
-                }}
+
+                onAnalyze={handleAnalyze}
             />
 
+            <AIAnalysisDialog
+                open={Boolean(analysisApplication)}
+                onClose={() => {
+                    setAnalysisApplication(null);
+                    setAnalysis(null);
+                }}
+                analysis={analysis}
+                application={analysisApplication}
+                loading={applicationAnalysisMutation.isPending}
+            />
+
+                
+            
             <ApplicationDialog
                 open={open}
                 onClose={() => setOpen(false)}
