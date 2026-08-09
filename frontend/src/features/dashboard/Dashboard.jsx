@@ -18,10 +18,22 @@ import StatCard from "../../shared/components/StatCard";
 import { useDashboardStats } from "../companies/hooks";
 import { useAIAnalysis } from "../ai/hooks";
 
+import {
+    useAIInsights,
+} from "../ai/hooks";
+
+import AIInsightCard from "../ai/AIInsightCard";
 
 export default function Dashboard() {
 
     const { data, isLoading } = useDashboardStats();
+
+    const {
+        data: aiInsight,
+        isLoading: aiLoading,
+        error: aiError,
+        refetch: refreshAI,
+    } = useAIInsights();
 
     const analysisMutation = useAIAnalysis();
 
@@ -80,6 +92,12 @@ export default function Dashboard() {
             >
                 Dashboard
             </Typography>
+            <AIInsightCard
+                insight={aiInsight}
+                isLoading={aiLoading}
+                error={aiError}
+                onRefresh={refreshAI}
+            />
 
 
             {/* -------------------------------- */}
