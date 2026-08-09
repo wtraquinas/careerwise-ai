@@ -89,6 +89,9 @@ export default function Applications() {
       }
     };
 
+    const applicationAnalysisMutation =
+        useAIApplicationAnalysis();
+
     const [analysisApplication, setAnalysisApplication] =
         useState(null);
 
@@ -114,8 +117,7 @@ export default function Applications() {
         }
     };
 
-    const applicationAnalysisMutation =
-    useAIApplicationAnalysis();
+    
 
     // -----------------------------
     // Create company lookup
@@ -331,7 +333,6 @@ export default function Applications() {
                 open={open}
                 onClose={() => setOpen(false)}
                 application={selectedApplication}
-                onSave={handleSave}
             />
 
             <DeleteDialog

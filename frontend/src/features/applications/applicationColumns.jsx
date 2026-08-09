@@ -67,19 +67,23 @@ export const applicationColumns = (
     {
         field: "actions",
         headerName: "Actions",
+        width: 150,
         sortable: false,
         filterable: false,
 
         renderCell: ({ row }) => (
             <>
                 <IconButton
+                    color="primary"
+                    size="small"
                     onClick={() => onEdit(row)}
                 >
                     <EditIcon />
                 </IconButton>
 
                 <IconButton
-                    color="primary"
+                    color="secondary"
+                    size="small"
                     onClick={() => onAnalyze(row)}
                 >
                     <AutoAwesomeIcon />
@@ -87,6 +91,7 @@ export const applicationColumns = (
 
                 <IconButton
                     color="error"
+                    size="small"
                     onClick={() => onDelete(row)}
                 >
                     <DeleteIcon />
