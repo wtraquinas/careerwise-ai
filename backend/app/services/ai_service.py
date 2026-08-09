@@ -60,6 +60,139 @@ Notes: {application.notes or "None"}
 
 
     @staticmethod
+    def get_application_context(
+        db: Session,
+        application_id: int,
+    ) -> str:
+
+        application = (
+            db.query(Application)
+            .filter(Application.id == application_id)
+            .first()
+        )
+
+        if not application:
+            return ""
+
+        company = (
+            db.query(Company)
+            .filter(Company.id == application.company_id)
+            .first()
+        )
+
+        company_name = (
+            company.name
+            if company
+            else "Unknown company"
+        )
+
+        return f"""
+    APPLICATION:
+
+    Application ID: {application.id}
+    Company: {company_name}
+    Position: {application.position}
+    Status: {application.status}
+    Salary: {application.salary or "Not specified"}
+    Applied date: {application.applied_date or "Not specified"}
+    Job URL: {application.job_url or "Not specified"}
+    Notes: {application.notes or "None"}
+    """
+
+
+    @staticmethod
+    def analyze_application(
+        db: Session,
+        application_id: int,
+    ) -> dict:
+
+        context = AIService.get_application_context(
+            db,
+            application_id,
+        )
+
+        if not context:
+            return {
+                "error": "Application not found."
+            }
+
+        system_prompt = """
+    You are CareerWise AI Coach.
+
+    Analyze the job application provided by the user.
+
+    Give practical, concise career advice.
+
+    Your response MUST be valid JSON.
+
+    Use exactly these fields:
+
+    {
+        "summary": "short assessment",
+        "priority": "high, medium, or low",
+        "reason": "why this priority was assigned",
+        "next_steps": [
+            "action 1",
+            "action 2",
+            "action 3"
+        ],
+        "interview_preparation": [
+            "preparation item 1",
+            "preparation item 2"
+        ],
+        "follow_up": "recommended follow-up action"
+    }
+
+    Do not include markdown.
+    Do not include ```json.
+    Do not include any text outside the JSON object.
+
+    If the application is not at interview stage,
+    interview_preparation can be an empty list.
+    """
+
+        response = client.chat.completions.create(
+            model="gpt-5-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": context,
+                },
+            ],
+            max_completion_tokens=2000,
+        )
+
+        print("========== APPLICATION ANALYSIS RESPONSE ==========")
+        print(response)
+        print("====================================================")
+
+        content = response.choices[0].message.content
+
+        if not content:
+            return {
+                "error": "The AI returned an empty response."
+            }
+
+        import json
+
+        try:
+            return json.loads(content)
+
+        except json.JSONDecodeError:
+
+            print("AI returned invalid JSON:")
+            print(content)
+
+            return {
+                "error": "The AI returned an invalid analysis response.",
+                "raw_response": content,
+            }
+
+    @staticmethod
     def chat(
         db: Session,
         message: str,

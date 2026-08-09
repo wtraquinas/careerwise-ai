@@ -37,3 +37,13 @@ def analyze_career(
     db: Session = Depends(get_db),
 ):
     return AIService.analyze(db)
+
+@router.post("/analyze/{application_id}")
+def analyze_application(
+    application_id: int,
+    db: Session = Depends(get_db),
+):
+    return AIService.analyze_application(
+        db,
+        application_id,
+    )

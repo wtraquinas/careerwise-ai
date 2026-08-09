@@ -25,6 +25,10 @@ import ApplicationDialog from "./ApplicationDialog";
 import DeleteDialog from "../../shared/components/DeleteDialog";
 import AppSnackbar from "../../shared/components/AppSnackbar";
 
+import {
+    useAIApplicationAnalysis,
+} from "../ai/hooks";
+
 export default function Applications() {
 
     const [search, setSearch] = useState("");
@@ -82,6 +86,10 @@ export default function Applications() {
 
       }
     };
+
+
+    const applicationAnalysisMutation =
+    useAIApplicationAnalysis();
 
     // -----------------------------
     // Create company lookup
@@ -274,6 +282,11 @@ export default function Applications() {
                     setOpen(true);
                 }}
                 onDelete={handleDeleteClick}
+                onAnalyze={(application) => {
+                    applicationAnalysisMutation.mutate(
+                        application.id
+                    );
+                }}
             />
 
             <ApplicationDialog

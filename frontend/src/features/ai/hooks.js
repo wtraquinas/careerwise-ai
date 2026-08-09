@@ -17,3 +17,10 @@ export function useAIAnalysis() {
         mutationFn: AIAPI.analyze,
     });
 }
+
+export function useAIApplicationAnalysis() {
+    return useMutation({
+        mutationFn: (applicationId) =>
+            AIAPI.analyzeApplication(applicationId),
+    });
+}

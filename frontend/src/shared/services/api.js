@@ -35,6 +35,10 @@ export const AIAPI = {
     analyze() {
         return api.post("/ai/analyze", {});
     },
+    
+    analyzeApplication(id) {
+        return api.post(`/ai/analyze/${id}`);
+    },
 };
 
 

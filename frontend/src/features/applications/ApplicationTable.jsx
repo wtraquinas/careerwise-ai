@@ -3,15 +3,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import { applicationColumns } from "./applicationColumns";
 
 export default function ApplicationTable({
-
     applications,
-
     companyMap,
-
     onEdit,
-
     onDelete,
-
+    onAnalyze,
 }) {
 
     return (
@@ -26,7 +22,9 @@ export default function ApplicationTable({
 
                 onEdit,
 
-                onDelete
+                onDelete,
+
+                onAnalyze
 
             )}
 

@@ -6,6 +6,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+
 const statusColor = {
     Applied: "primary",
     Interview: "warning",
@@ -18,7 +20,8 @@ const statusColor = {
 export const applicationColumns = (
     companyMap,
     onEdit,
-    onDelete
+    onDelete,
+    onAnalyze
 ) => [
 
     {
@@ -73,6 +76,13 @@ export const applicationColumns = (
                     onClick={() => onEdit(row)}
                 >
                     <EditIcon />
+                </IconButton>
+
+                <IconButton
+                    color="primary"
+                    onClick={() => onAnalyze(row)}
+                >
+                    <AutoAwesomeIcon />
                 </IconButton>
 
                 <IconButton
