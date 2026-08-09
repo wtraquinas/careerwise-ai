@@ -212,7 +212,7 @@ export default function AIAnalysisDialog({
                                                         minWidth: 32,
                                                     }}
                                                 >
-                                                    <CheckCircleOutlineIcon
+                                                    <CheckCircleIcon
                                                         color="primary"
                                                         fontSize="small"
                                                     />
