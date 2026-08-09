@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 export default function AIInsightCard({
@@ -160,7 +160,7 @@ export default function AIInsightCard({
                                                 minWidth: 32,
                                             }}
                                         >
-                                            <CheckCircleOutlineIcon
+                                            <CheckIcon
                                                 fontSize="small"
                                                 color="primary"
                                             />
