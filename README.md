@@ -8,6 +8,31 @@ The project is being developed as a portfolio-ready AI Engineering application, 
 
 ---
 
+## 🚀 Live Demo
+
+<br>
+
+<!-- comment -->
+<!-- 
+<center>
+<img src="./images/UN AI Situation Room - Screenshot 20260809.jpg"></img>
+</center>
+-->
+
+| Service | URL |
+|---|---|
+| Frontend | https://careerwise-ai.vercel.app/ |
+| Backend API | https://careerwise-api-8x1i.onrender.com |
+| Health check | https://careerwise-api-8x1i.onrender.com/health |
+
+
+
+<br>
+
+
+
+---
+
 ## ✨ Current Status
 
 🚧 **Active development**
