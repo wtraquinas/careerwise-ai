@@ -4,12 +4,14 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     CircularProgress,
     Divider,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
+    Stack,
     Typography,
 } from "@mui/material";
 
@@ -71,26 +73,22 @@ export default function AIInsightCard({
         return null;
     }
 
-    const priority = insight.priority || "low";
-
     return (
         <Card
             sx={{
                 mb: 3,
                 border: 1,
-                borderColor:
-                    priority === "high"
-                        ? "warning.main"
-                        : "divider",
+                borderColor: "primary.main",
             }}
         >
             <CardContent>
+
                 {/* Header */}
                 <Box
                     sx={{
                         display: "flex",
                         justifyContent: "space-between",
-                        alignItems: "flex-start",
+                        alignItems: "center",
                         gap: 2,
                     }}
                 >
@@ -122,35 +120,123 @@ export default function AIInsightCard({
 
                 <Divider sx={{ my: 2 }} />
 
-                {/* Headline */}
-                <Typography
-                    variant="h6"
-                    sx={{ mb: 1 }}
-                >
-                    {insight.headline}
-                </Typography>
-
                 {/* Summary */}
                 <Typography
-                    color="text.secondary"
-                    sx={{ mb: 2 }}
+                    variant="body1"
+                    sx={{ mb: 3 }}
                 >
                     {insight.summary}
                 </Typography>
 
-                {/* Actions */}
-                {insight.actions?.length > 0 && (
+                {/* Priorities */}
+                {insight.priorities?.length > 0 && (
                     <>
                         <Typography
-                            variant="subtitle2"
-                            sx={{ mb: 1 }}
+                            variant="subtitle1"
+                            fontWeight={600}
+                            sx={{ mb: 2 }}
                         >
-                            Recommended actions
+                            Application Priorities
+                        </Typography>
+
+                        <Stack spacing={2}>
+                            {insight.priorities.map(
+                                (item) => (
+                                    <Box
+                                        key={
+                                            item.application_id
+                                        }
+                                        sx={{
+                                            p: 2,
+                                            border: 1,
+                                            borderColor:
+                                                "divider",
+                                            borderRadius: 2,
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent:
+                                                    "space-between",
+                                                alignItems:
+                                                    "flex-start",
+                                                gap: 2,
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="subtitle2"
+                                                fontWeight={600}
+                                            >
+                                                Application #
+                                                {
+                                                    item.application_id
+                                                }
+                                            </Typography>
+
+                                            <Chip
+                                                label={
+                                                    item.priority
+                                                }
+                                                size="small"
+                                                color={
+                                                    item.priority ===
+                                                    "high"
+                                                        ? "error"
+                                                        : item.priority ===
+                                                          "medium"
+                                                        ? "warning"
+                                                        : "default"
+                                                }
+                                            />
+                                        </Box>
+
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ mb: 1 }}
+                                        >
+                                            <strong>
+                                                Why:
+                                            </strong>{" "}
+                                            {item.reason}
+                                        </Typography>
+
+                                        <Typography
+                                            variant="body2"
+                                        >
+                                            <strong>
+                                                Next action:
+                                            </strong>{" "}
+                                            {item.action}
+                                        </Typography>
+                                    </Box>
+                                )
+                            )}
+                        </Stack>
+                    </>
+                )}
+
+                {/* Recommendations */}
+                {insight.recommendations?.length > 0 && (
+                    <>
+                        <Typography
+                            variant="subtitle1"
+                            fontWeight={600}
+                            sx={{
+                                mt: 3,
+                                mb: 1,
+                            }}
+                        >
+                            Recommendations
                         </Typography>
 
                         <List dense>
-                            {insight.actions.map(
-                                (action, index) => (
+                            {insight.recommendations.map(
+                                (
+                                    recommendation,
+                                    index
+                                ) => (
                                     <ListItem
                                         key={index}
                                         disableGutters
@@ -167,7 +253,9 @@ export default function AIInsightCard({
                                         </ListItemIcon>
 
                                         <ListItemText
-                                            primary={action}
+                                            primary={
+                                                recommendation
+                                            }
                                         />
                                     </ListItem>
                                 )
