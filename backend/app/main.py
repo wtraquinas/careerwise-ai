@@ -36,6 +36,9 @@ frontend_url = os.getenv(
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=[
+        "https://careerwise-ai.vercel.app",
+    ],
     allow_origin_regex=r"https://.*\.app\.github\.dev",
     allow_credentials=True,
     allow_methods=["*"],

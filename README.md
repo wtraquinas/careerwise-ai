@@ -6,7 +6,9 @@ CareerWise AI combines a **Career CRM** with an **AI Career Coach**. It helps us
 
 The project is being developed as a portfolio-ready AI Engineering application, with a focus on practical AI integration, modern backend/frontend architecture, and a path toward agentic workflows.
 
+
 ---
+
 
 ## 🚀 Live Demo
 
