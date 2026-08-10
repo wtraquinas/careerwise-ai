@@ -124,6 +124,7 @@ export const ApplicationAPI = {
     },
 };
 
+
 // -------------------------
 // Recruiter API
 // -------------------------
@@ -132,6 +133,22 @@ export const RecruiterAPI = {
 
     getAll() {
         return api.get("/recruiters");
+    },
+
+    getById(id) {
+        return api.get(`/recruiters/${id}`);
+    },
+
+    create(data) {
+        return api.post("/recruiters", data);
+    },
+
+    update(id, data) {
+        return api.put(`/recruiters/${id}`, data);
+    },
+
+    delete(id) {
+        return api.delete(`/recruiters/${id}`);
     },
 
 };
@@ -143,7 +160,23 @@ export const RecruiterAPI = {
 export const TaskAPI = {
 
     getAll() {
-        return api.get("/tasks");
+        return api.get("/tasks/");
+    },
+
+    getById(id) {
+        return api.get(`/tasks/${id}`);
+    },
+
+    create(data) {
+        return api.post("/tasks/", data);
+    },
+
+    update(id, data) {
+        return api.put(`/tasks/${id}`, data);
+    },
+
+    delete(id) {
+        return api.delete(`/tasks/${id}`);
     },
 
 };

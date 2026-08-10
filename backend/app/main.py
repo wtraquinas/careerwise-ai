@@ -18,7 +18,9 @@ from app.shared.database.session import engine
 # Import all models so SQLAlchemy registers them
 from app.shared.database.models import *
 
-Base.metadata.create_all(bind=engine)
+from app.api.recruiters import router as recruiter_router
+from app.api.tasks import router as task_router
+
 
 app = FastAPI(
     title="CareerWise API",
@@ -34,7 +36,7 @@ frontend_url = os.getenv(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url],
+    allow_origin_regex=r"https://.*\.app\.github\.dev",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,6 +47,8 @@ app.include_router(company_router)
 app.include_router(dashboard_router)
 app.include_router(ai_router)
 app.include_router(application_router)
+app.include_router(recruiter_router)
+app.include_router(task_router)
 
 @app.get("/api/v1/health")
 def health():

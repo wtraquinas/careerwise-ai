@@ -21,6 +21,7 @@ import { useAIAnalysis } from "../ai/hooks";
 import AIInsightCard from "../ai/AIInsightCard";
 
 export default function Dashboard() {
+
     const {
         data,
         isLoading,
@@ -32,15 +33,19 @@ export default function Dashboard() {
 
     const runAnalysis = useCallback(async () => {
         try {
+
             const response =
                 await analysisMutation.mutateAsync();
 
             setAnalysis(response.data);
+
         } catch (error) {
+
             console.error(
                 "AI analysis failed:",
                 error
             );
+
         }
     }, [analysisMutation]);
 
@@ -62,33 +67,33 @@ export default function Dashboard() {
             value: data?.companies ?? 0,
         },
         {
-            title: "Users",
-            value: data?.users ?? 0,
+            title: "Applications",
+            value: data?.applications ?? 0,
+        },
+        {
+            title: "Recruiters",
+            value: data?.recruiters ?? 0,
+        },
+        {
+            title: "Tasks",
+            value: data?.tasks ?? 0,
         },
     ];
 
     return (
-        <>
+        <Box
+            sx={{
+                width: "100%",
+                maxWidth: 1200,
+                mx: "auto",
+            }}
+        >
             <Typography
                 variant="h4"
                 sx={{ mb: 3 }}
             >
                 Dashboard
             </Typography>
-
-            {/* AI Career Insight */}
-            <AIInsightCard
-                insight={analysis}
-                isLoading={
-                    analysisMutation.isPending
-                }
-                error={
-                    analysisMutation.isError
-                        ? analysisMutation.error
-                        : null
-                }
-                onRefresh={runAnalysis}
-            />
 
             {/* Statistics */}
             <Grid
@@ -112,6 +117,18 @@ export default function Dashboard() {
                 ))}
             </Grid>
 
+            {/* AI Career Insight */}
+            <AIInsightCard
+                insight={analysis}
+                isLoading={analysisMutation.isPending}
+                error={
+                    analysisMutation.isError
+                        ? analysisMutation.error
+                        : null
+                }
+                onRefresh={runAnalysis}
+            />
+
             {/* Refresh AI Analysis */}
             {analysis && (
                 <Box
@@ -123,18 +140,14 @@ export default function Dashboard() {
                 >
                     <Button
                         variant="outlined"
-                        startIcon={
-                            <AutoAwesomeIcon />
-                        }
+                        startIcon={<AutoAwesomeIcon />}
                         onClick={runAnalysis}
-                        disabled={
-                            analysisMutation.isPending
-                        }
+                        disabled={analysisMutation.isPending}
                     >
                         Refresh AI Insights
                     </Button>
                 </Box>
             )}
-        </>
+        </Box>
     );
 }

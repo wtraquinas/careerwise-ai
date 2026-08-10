@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
-
+from sqlalchemy.orm import relationship
 from app.shared.database.base import Base
 
 
@@ -17,3 +17,9 @@ class Company(Base):
     location = Column(String(150))
 
     notes = Column(Text)
+
+    recruiters = relationship(
+        "Recruiter",
+        back_populates="company",
+        cascade="all, delete-orphan",
+    )

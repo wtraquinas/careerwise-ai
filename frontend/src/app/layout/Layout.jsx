@@ -11,7 +11,7 @@ export default function Layout() {
 
       <main
         style={{
-          marginLeft: 240,
+          marginLeft: 200,
           marginTop: 64,
           padding: 24,
         }}

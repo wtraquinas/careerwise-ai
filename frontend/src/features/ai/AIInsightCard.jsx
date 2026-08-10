@@ -27,13 +27,18 @@ export default function AIInsightCard({
 }) {
     if (isLoading) {
         return (
-            <Card sx={{ mb: 3 }}>
+            <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 2,
+                            gap: 8,
+                            mt: 2,
+                            borderRadius: 4,
+                            border: "0px solid",
+                            borderColor: "primary.main",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
                         }}
                     >
                         <CircularProgress size={24} />
@@ -76,9 +81,11 @@ export default function AIInsightCard({
     return (
         <Card
             sx={{
-                mb: 3,
-                border: 1,
+                mt: 2,
+                borderRadius: 2,
+                border: "1px solid",
                 borderColor: "primary.main",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
             }}
         >
             <CardContent>

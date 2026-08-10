@@ -2,10 +2,11 @@ import {
     Drawer,
     List,
     ListItemButton,
+    ListItemIcon,
     ListItemText,
 } from "@mui/material";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -15,63 +16,133 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-const drawerWidth = 240;
+const drawerWidth = 165;
+
+const menuItems = [
+    {
+        label: "Dashboard",
+        path: "/",
+        icon: <DashboardIcon />,
+    },
+    {
+        label: "Companies",
+        path: "/companies",
+        icon: <BusinessIcon />,
+    },
+    {
+        label: "Applications",
+        path: "/applications",
+        icon: <WorkIcon />,
+    },
+    {
+        label: "Recruiters",
+        path: "/recruiters",
+        icon: <PeopleIcon />,
+    },
+    {
+        label: "Tasks",
+        path: "/tasks",
+        icon: <AssignmentIcon />,
+    },
+    {
+        label: "AI Coach",
+        path: "/ai",
+        icon: <SmartToyIcon />,
+    },
+    {
+        label: "Settings",
+        path: "/settings",
+        icon: <SettingsIcon />,
+    },
+];
 
 export default function Sidebar() {
 
-    return (
+    const location = useLocation();
 
+    return (
         <Drawer
             variant="permanent"
             sx={{
                 width: drawerWidth,
+                flexShrink: 0,
+
                 "& .MuiDrawer-paper": {
                     width: drawerWidth,
                     boxSizing: "border-box",
+                    overflowX: "hidden",
                 },
             }}
         >
 
-            <List>
+            <List
+                sx={{
+                    px: 0.75,
+                    pt: 1,
+                }}
+            >
 
-                <ListItemButton component={Link} to="/">
-                    <DashboardIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Dashboard" />
-                </ListItemButton>
+                {menuItems.map((item) => {
 
-                <ListItemButton component={Link} to="/companies">
-                    <BusinessIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Companies" />
-                </ListItemButton>
+                    const isActive =
+                        location.pathname === item.path;
 
-                <ListItemButton component={Link} to="/applications">
-                    <WorkIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Applications" />
-                </ListItemButton>
+                    return (
+                        <ListItemButton
+                            key={item.path}
+                            component={Link}
+                            to={item.path}
+                            selected={isActive}
+                            sx={{
+                                minHeight: 36,
+                                px: 1,
+                                mb: 0.5,
+                                borderRadius: 1,
 
-                <ListItemButton component={Link} to="/recruiters">
-                    <PeopleIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Recruiters" />
-                </ListItemButton>
+                                "&.Mui-selected": {
+                                    backgroundColor:
+                                        "rgba(25, 118, 210, 0.10)",
+                                },
 
-                <ListItemButton component={Link} to="/tasks">
-                    <AssignmentIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Tasks" />
-                </ListItemButton>
+                                "&.Mui-selected:hover": {
+                                    backgroundColor:
+                                        "rgba(25, 118, 210, 0.15)",
+                                },
+                            }}
+                        >
 
-                <ListItemButton component={Link} to="/ai">
-                    <SmartToyIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="AI Coach" />
-                </ListItemButton>
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 26,
+                                    color: isActive
+                                        ? "primary.main"
+                                        : "inherit",
 
-                <ListItemButton component={Link} to="/settings">
-                    <SettingsIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Settings" />
-                </ListItemButton>
+                                    "& svg": {
+                                        fontSize: 17,
+                                    },
+                                }}
+                            >
+                                {item.icon}
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={item.label}
+                                primaryTypographyProps={{
+                                    fontSize: "0.72rem",
+                                    fontWeight: isActive
+                                        ? 500
+                                        : 400,
+                                    whiteSpace: "nowrap",
+                                }}
+                            />
+
+                        </ListItemButton>
+                    );
+                })}
 
             </List>
 
         </Drawer>
-
     );
 }
