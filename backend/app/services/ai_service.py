@@ -1,3 +1,5 @@
+import json
+
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
@@ -25,9 +27,7 @@ class AIService:
         if not applications:
             return "No job applications are currently stored."
 
-        context = []
-
-        context.append("CURRENT CAREERWISE APPLICATIONS:")
+        context = ["CURRENT CAREERWISE APPLICATIONS:"]
 
         for application in applications:
 
@@ -58,6 +58,9 @@ Notes: {application.notes or "None"}
 
         return "\n".join(context)
 
+    # ---------------------------------------------------------
+    # SINGLE APPLICATION CONTEXT
+    # ---------------------------------------------------------
 
     @staticmethod
     def get_application_context(
@@ -87,18 +90,21 @@ Notes: {application.notes or "None"}
         )
 
         return f"""
-    APPLICATION:
+APPLICATION:
 
-    Application ID: {application.id}
-    Company: {company_name}
-    Position: {application.position}
-    Status: {application.status}
-    Salary: {application.salary or "Not specified"}
-    Applied date: {application.applied_date or "Not specified"}
-    Job URL: {application.job_url or "Not specified"}
-    Notes: {application.notes or "None"}
-    """
+Application ID: {application.id}
+Company: {company_name}
+Position: {application.position}
+Status: {application.status}
+Salary: {application.salary or "Not specified"}
+Applied date: {application.applied_date or "Not specified"}
+Job URL: {application.job_url or "Not specified"}
+Notes: {application.notes or "None"}
+"""
 
+    # ---------------------------------------------------------
+    # AI ANALYSIS OF ONE APPLICATION
+    # ---------------------------------------------------------
 
     @staticmethod
     def analyze_application(
@@ -117,39 +123,39 @@ Notes: {application.notes or "None"}
             }
 
         system_prompt = """
-    You are CareerWise AI Coach.
+You are CareerWise AI Coach.
 
-    Analyze the job application provided by the user.
+Analyze the job application provided by the user.
 
-    Give practical, concise career advice.
+Give practical, concise career advice.
 
-    Your response MUST be valid JSON.
+Your response MUST be valid JSON.
 
-    Use exactly these fields:
+Use exactly these fields:
 
-    {
-        "summary": "short assessment",
-        "priority": "high, medium, or low",
-        "reason": "why this priority was assigned",
-        "next_steps": [
-            "action 1",
-            "action 2",
-            "action 3"
-        ],
-        "interview_preparation": [
-            "preparation item 1",
-            "preparation item 2"
-        ],
-        "follow_up": "recommended follow-up action"
-    }
+{
+    "summary": "short assessment",
+    "priority": "high, medium, or low",
+    "reason": "why this priority was assigned",
+    "next_steps": [
+        "action 1",
+        "action 2",
+        "action 3"
+    ],
+    "interview_preparation": [
+        "preparation item 1",
+        "preparation item 2"
+    ],
+    "follow_up": "recommended follow-up action"
+}
 
-    Do not include markdown.
-    Do not include ```json.
-    Do not include any text outside the JSON object.
+Do not include markdown.
+Do not include ```json.
+Do not include any text outside the JSON object.
 
-    If the application is not at interview stage,
-    interview_preparation can be an empty list.
-    """
+If the application is not at interview stage,
+interview_preparation can be an empty list.
+"""
 
         response = client.chat.completions.create(
             model="gpt-5-mini",
@@ -166,9 +172,13 @@ Notes: {application.notes or "None"}
             max_completion_tokens=2000,
         )
 
-        print("========== APPLICATION ANALYSIS RESPONSE ==========")
+        print(
+            "========== APPLICATION ANALYSIS RESPONSE =========="
+        )
         print(response)
-        print("====================================================")
+        print(
+            "===================================================="
+        )
 
         content = response.choices[0].message.content
 
@@ -176,8 +186,6 @@ Notes: {application.notes or "None"}
             return {
                 "error": "The AI returned an empty response."
             }
-
-        import json
 
         try:
             return json.loads(content)
@@ -192,17 +200,17 @@ Notes: {application.notes or "None"}
                 "raw_response": content,
             }
 
+    # ---------------------------------------------------------
+    # AI COACH CHAT
+    # ---------------------------------------------------------
+
     @staticmethod
     def chat(
         db: Session,
         message: str,
     ) -> str:
 
-    
-
-        career_context = (
-            AIService.get_career_context(db)
-        )
+        career_context = AIService.get_career_context(db)
 
         system_prompt = f"""
 You are CareerWise AI Coach.
@@ -231,12 +239,11 @@ Do not concatenate words.
 Use short paragraphs and bullet points where appropriate.
 Do not include unnecessary meta-commentary.
 
-CURRENT CAREERWISE DATA
------------------------
+## CURRENT CAREERWISE DATA
 
 {career_context}
 
------------------------
+---
 
 Your responsibilities include:
 
@@ -278,6 +285,23 @@ use the actual CareerWise data above.
             max_completion_tokens=3000,
         )
 
+        print("========== OPENAI CHAT RESPONSE ==========")
+        print(response)
+        print("==========================================")
+
+        content = response.choices[0].message.content
+
+        if not content:
+            return (
+                "I wasn't able to generate a response right now. "
+                "Please try your question again."
+            )
+
+        return content
+
+    # ---------------------------------------------------------
+    # CAREER PIPELINE ANALYSIS
+    # ---------------------------------------------------------
 
     @staticmethod
     def analyze(db: Session) -> dict:
@@ -285,58 +309,58 @@ use the actual CareerWise data above.
         career_context = AIService.get_career_context(db)
 
         system_prompt = f"""
-    You are CareerWise AI Career Insights.
+You are CareerWise AI Career Insights.
 
-    You analyze a user's current job application pipeline
-    and provide practical career recommendations.
+You analyze a user's current job application pipeline
+and provide practical career recommendations.
 
-    Use ONLY the CareerWise data provided below when making
-    claims about the user's applications.
+Use ONLY the CareerWise data provided below when making
+claims about the user's applications.
 
-    Do not invent applications, companies, statuses, dates,
-    salaries, recruiter interactions, or other career data.
+Do not invent applications, companies, statuses, dates,
+salaries, recruiter interactions, or other career data.
 
-    Analyze:
+Analyze:
 
-    - Application status
-    - Application dates
-    - Companies
-    - Positions
-    - Salary information
-    - Notes
+- Application status
+- Application dates
+- Companies
+- Positions
+- Salary information
+- Notes
 
-    Identify which applications deserve the most attention.
+Identify which applications deserve the most attention.
 
-    Return your answer as valid JSON with exactly this structure:
+Return your answer as valid JSON with exactly this structure:
 
-    {{
-        "summary": "Short overall assessment of the current pipeline.",
-        "priorities": [
-            {{
-                "application_id": 0,
-                "priority": "high",
-                "reason": "Why this application deserves attention.",
-                "action": "What the user should do next."
-            }}
-        ],
-        "recommendations": [
-            "Practical recommendation 1",
-            "Practical recommendation 2"
-        ]
-    }}
+{{
+    "summary": "Short overall assessment of the current pipeline.",
+    "priorities": [
+        {{
+            "application_id": 0,
+            "priority": "high",
+            "reason": "Why this application deserves attention.",
+            "action": "What the user should do next."
+        }}
+    ],
+    "recommendations": [
+        "Practical recommendation 1",
+        "Practical recommendation 2"
+    ]
+}}
 
-    Priority must be one of:
+Priority must be one of:
 
-    - high
-    - medium
-    - low
+- high
+- medium
+- low
 
-    Keep the analysis concise and practical.
+Keep the analysis concise and practical.
 
-    ## CURRENT CAREERWISE DATA
+## CURRENT CAREERWISE DATA
 
-    {career_context}
-    """
+{career_context}
+"""
 
         response = client.chat.completions.create(
             model="gpt-5-mini",
@@ -344,27 +368,38 @@ use the actual CareerWise data above.
                 {
                     "role": "system",
                     "content": system_prompt,
-                }
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "Analyze my current application pipeline "
+                        "and give me practical career recommendations."
+                    ),
+                },
             ],
-            max_completion_tokens=1500,
-            response_format={
-                "type": "json_object"
-            },
+            max_completion_tokens=2000,
         )
+
+        print("========== OPENAI PIPELINE ANALYSIS ==========")
+        print(response)
+        print("===============================================")
 
         content = response.choices[0].message.content
 
         if not content:
-            raise ValueError("OpenAI returned an empty analysis.")
+            return {
+                "error": "I wasn't able to generate a career analysis right now."
+            }
 
-        import json
+        try:
+            return json.loads(content)
 
-        return json.loads(content)
+        except json.JSONDecodeError:
 
+            print("AI returned invalid JSON:")
+            print(content)
 
-
-        print("========== OPENAI RESPONSE ==========")
-        print(response)
-        print("======================================")
-
-        return response.choices[0].message.content or ""
+            return {
+                "error": "The AI returned an invalid analysis response.",
+                "raw_response": content,
+            }
