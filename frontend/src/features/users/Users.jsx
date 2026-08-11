@@ -1,16 +1,10 @@
 import { useState } from "react";
-import UserDialog from "./UserDialog";
 
 import {
     Box,
     Button,
     Card,
     CardContent,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
     IconButton,
     Typography,
 } from "@mui/material";
@@ -21,8 +15,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
     useUsers,
+    useUpdateUser,
     useDeleteUser,
 } from "./hooks";
+
+import UserDialog from "./UserDialog";
 
 export default function Users() {
     const {
@@ -31,31 +28,59 @@ export default function Users() {
         isError,
     } = useUsers();
 
+    const updateUser = useUpdateUser();
     const deleteUser = useDeleteUser();
 
-    const [userToDelete, setUserToDelete] = useState(null);
-
-    const [userToEdit, setUserToEdit] = useState(null);
-
+    const [editingUser, setEditingUser] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    const handleEdit = (user) => {
+        console.log("Editing user:", user);
 
-    const handleAddUser = () => {
-        setUserToEdit(null);
-        setDialogOpen(true);
-    };
-
-    const handleEditUser = (user) => {
-        setUserToEdit(user);
+        setEditingUser(user);
         setDialogOpen(true);
     };
 
     const handleCloseDialog = () => {
+        if (updateUser.isPending) {
+            return;
+        }
+
         setDialogOpen(false);
-        setUserToEdit(null);
+        setEditingUser(null);
     };
 
-    
+    const handleSaveUser = (data) => {
+        if (!editingUser) {
+            return;
+        }
+
+        updateUser.mutate(
+            {
+                id: editingUser.id,
+                data,
+            },
+            {
+                onSuccess: () => {
+                    setDialogOpen(false);
+                    setEditingUser(null);
+                },
+            }
+        );
+    };
+
+    const handleDelete = (user) => {
+        const confirmed = window.confirm(
+            `Delete user "${user.full_name}"?`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        deleteUser.mutate(user.id);
+    };
+
     if (isLoading) {
         return (
             <Typography>
@@ -71,26 +96,6 @@ export default function Users() {
             </Typography>
         );
     }
-
-    const handleDeleteClick = (user) => {
-        setUserToDelete(user);
-    };
-
-    const handleDeleteCancel = () => {
-        setUserToDelete(null);
-    };
-
-    const handleDeleteConfirm = () => {
-        if (!userToDelete) {
-            return;
-        }
-
-        deleteUser.mutate(userToDelete.id, {
-            onSuccess: () => {
-                setUserToDelete(null);
-            },
-        });
-    };
 
     return (
         <Box>
@@ -120,7 +125,6 @@ export default function Users() {
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
-                    onClick={handleAddUser}
                 >
                     Add User
                 </Button>
@@ -142,6 +146,7 @@ export default function Users() {
                             justifyContent: "space-between",
                         }}
                     >
+
                         <Box>
                             <Typography
                                 variant="h6"
@@ -153,13 +158,24 @@ export default function Users() {
                             <Typography color="text.secondary">
                                 {user.email}
                             </Typography>
+
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    mt: 0.5,
+                                    fontWeight: 600,
+                                    textTransform: "capitalize",
+                                }}
+                            >
+                                Role: {user.role}
+                            </Typography>
                         </Box>
 
                         <Box>
                             <IconButton
                                 color="primary"
                                 aria-label="edit user"
-                                onClick={() => handleEditUser(user)}
+                                onClick={() => handleEdit(user)}
                             >
                                 <EditIcon />
                             </IconButton>
@@ -167,14 +183,13 @@ export default function Users() {
                             <IconButton
                                 color="error"
                                 aria-label="delete user"
-                                onClick={() =>
-                                    handleDeleteClick(user)
-                                }
+                                onClick={() => handleDelete(user)}
                                 disabled={deleteUser.isPending}
                             >
                                 <DeleteIcon />
                             </IconButton>
                         </Box>
+
                     </CardContent>
                 </Card>
             ))}
@@ -188,53 +203,13 @@ export default function Users() {
                 </Typography>
             )}
 
-            {/* Delete Confirmation Dialog */}
-            <Dialog
-                open={Boolean(userToDelete)}
-                onClose={handleDeleteCancel}
-                maxWidth="xs"
-                fullWidth
-            >
-                <DialogTitle>
-                    Delete User
-                </DialogTitle>
-
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete{" "}
-                        <strong>
-                            {userToDelete?.full_name}
-                        </strong>
-                        ?
-                        <br />
-                        This action cannot be undone.
-                    </DialogContentText>
-                </DialogContent>
-
-                <DialogActions>
-                    <Button
-                        onClick={handleDeleteCancel}
-                        disabled={deleteUser.isPending}
-                    >
-                        Cancel
-                    </Button>
-
-                    <Button
-                        onClick={handleDeleteConfirm}
-                        color="error"
-                        variant="contained"
-                        disabled={deleteUser.isPending}
-                    >
-                        {deleteUser.isPending
-                            ? "Deleting..."
-                            : "Delete"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {/* Edit User Dialog */}
             <UserDialog
                 open={dialogOpen}
+                user={editingUser}
                 onClose={handleCloseDialog}
-                user={userToEdit}
+                onSave={handleSaveUser}
+                isSaving={updateUser.isPending}
             />
 
         </Box>

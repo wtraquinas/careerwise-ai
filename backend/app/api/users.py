@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, require_admin
 from app.features.auth.models import User
 from app.schemas.user import (
     UserCreate,
@@ -23,7 +23,7 @@ router = APIRouter(
 )
 def get_users(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ):
     return (
         db.query(User)
@@ -39,7 +39,7 @@ def get_users(
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin)
 ):
     user = (
         db.query(User)
@@ -64,7 +64,7 @@ def get_user(
 def create_user(
     user_data: UserCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
 ):
     existing = (
         db.query(User)
@@ -78,10 +78,17 @@ def create_user(
             detail="Email already exists",
         )
 
+    if user_data.role not in {"user", "admin"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid user role",
+        )
+
     user = User(
         full_name=user_data.full_name,
         email=user_data.email,
         hashed_password=hash_password(user_data.password),
+        role=user_data.role,
     )
 
     db.add(user)
@@ -99,7 +106,7 @@ def update_user(
     user_id: int,
     user_data: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin)
 ):
     user = (
         db.query(User)
@@ -128,8 +135,24 @@ def update_user(
             detail="Email already exists",
         )
 
+    if user_data.role not in {"user", "admin"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid user role",
+        )
+
+    if (
+        user.id == current_user.id
+        and user_data.role != "admin"
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="You cannot remove your own admin role",
+        )
+
     user.full_name = user_data.full_name
     user.email = user_data.email
+    user.role = user_data.role
 
     db.commit()
     db.refresh(user)
@@ -144,7 +167,7 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin)
 ):
     user = (
         db.query(User)

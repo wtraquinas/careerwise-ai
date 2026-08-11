@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import get_db, get_current_user
 from app.schemas.auth import UserRegister
 from app.services.auth_service import AuthService
 
@@ -57,3 +57,15 @@ def register(
             status_code=400,
             detail=str(e),
         )
+
+
+@router.get("/me")
+def get_me(
+    current_user = Depends(get_current_user),
+):
+    return {
+        "id": current_user.id,
+        "full_name": current_user.full_name,
+        "email": current_user.email,
+        "role": current_user.role,
+    }

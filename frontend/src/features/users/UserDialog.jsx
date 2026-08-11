@@ -6,137 +6,101 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    MenuItem,
     TextField,
 } from "@mui/material";
 
-import {
-    useCreateUser,
-    useUpdateUser,
-} from "./hooks";
-
 export default function UserDialog({
     open,
+    user,
     onClose,
-    user = null,
+    onSave,
+    isSaving = false,
 }) {
-    const isEditing = Boolean(user);
-
-    const [formData, setFormData] = useState({
-        full_name: "",
-        email: "",
-        password: "",
-    });
-
-    const createUser = useCreateUser();
-    const updateUser = useUpdateUser();
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [role, setRole] = useState("user");
 
     useEffect(() => {
         if (user) {
-            setFormData({
-                full_name: user.full_name || "",
-                email: user.email || "",
-                password: "",
-            });
-        } else {
-            setFormData({
-                full_name: "",
-                email: "",
-                password: "",
-            });
+            setFullName(user.full_name || "");
+            setEmail(user.email || "");
+            setRole(user.role || "user");
         }
-    }, [user, open]);
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-
-        setFormData((previous) => ({
-            ...previous,
-            [name]: value,
-        }));
-    };
+    }, [user]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (isEditing) {
-            updateUser.mutate(
-                {
-                    id: user.id,
-                    data: {
-                        full_name: formData.full_name,
-                        email: formData.email,
-                    },
-                },
-                {
-                    onSuccess: onClose,
-                }
-            );
-        } else {
-            createUser.mutate(
-                formData,
-                {
-                    onSuccess: onClose,
-                }
-            );
-        }
+        onSave({
+            full_name: fullName,
+            email,
+            role,
+        });
     };
-
-    const isSaving =
-        createUser.isPending ||
-        updateUser.isPending;
 
     return (
         <Dialog
             open={open}
             onClose={isSaving ? undefined : onClose}
-            maxWidth="sm"
             fullWidth
+            maxWidth="sm"
         >
             <form onSubmit={handleSubmit}>
                 <DialogTitle>
-                    {isEditing
-                        ? "Edit User"
-                        : "Add User"}
+                    Edit User
                 </DialogTitle>
 
-                <DialogContent>
+                <DialogContent
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        pt: 2,
+                    }}
+                >
                     <TextField
+                        label="Full name"
+                        value={fullName}
+                        onChange={(event) =>
+                            setFullName(event.target.value)
+                        }
                         fullWidth
-                        label="Full Name"
-                        name="full_name"
-                        value={formData.full_name}
-                        onChange={handleChange}
-                        margin="normal"
                         required
-                        autoFocus
                     />
 
                     <TextField
-                        fullWidth
                         label="Email"
-                        name="email"
                         type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        margin="normal"
+                        value={email}
+                        onChange={(event) =>
+                            setEmail(event.target.value)
+                        }
+                        fullWidth
                         required
                     />
 
-                    {!isEditing && (
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            margin="normal"
-                            required
-                        />
-                    )}
+                    <TextField
+                        select
+                        label="Role"
+                        value={role}
+                        onChange={(event) =>
+                            setRole(event.target.value)
+                        }
+                        fullWidth
+                        required
+                    >
+                        <MenuItem value="user">
+                            User
+                        </MenuItem>
+
+                        <MenuItem value="admin">
+                            Admin
+                        </MenuItem>
+                    </TextField>
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button
                         onClick={onClose}
                         disabled={isSaving}
@@ -149,11 +113,7 @@ export default function UserDialog({
                         variant="contained"
                         disabled={isSaving}
                     >
-                        {isSaving
-                            ? "Saving..."
-                            : isEditing
-                                ? "Save Changes"
-                                : "Create User"}
+                        {isSaving ? "Saving..." : "Save Changes"}
                     </Button>
                 </DialogActions>
             </form>
