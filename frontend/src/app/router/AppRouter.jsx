@@ -21,6 +21,7 @@ import Users from "../../features/users/Users";
 export default function AppRouter() {
     return (
         <BrowserRouter>
+
             <Routes>
 
                 {/* Public */}
@@ -29,9 +30,8 @@ export default function AppRouter() {
                     element={<Login />}
                 />
 
-                {/* Protected application */}
+                {/* Protected */}
                 <Route element={<ProtectedRoute />}>
-
                     <Route element={<Layout />}>
 
                         <Route
@@ -60,11 +60,6 @@ export default function AppRouter() {
                         />
 
                         <Route
-                            path="/users"
-                            element={<Users />}
-                        />
-
-                        <Route
                             path="/ai"
                             element={<AICoach />}
                         />
@@ -74,11 +69,16 @@ export default function AppRouter() {
                             element={<Settings />}
                         />
 
-                    </Route>
+                        <Route
+                            path="/users"
+                            element={<Users />}
+                        />
 
+                    </Route>
                 </Route>
 
             </Routes>
+
         </BrowserRouter>
     );
 }

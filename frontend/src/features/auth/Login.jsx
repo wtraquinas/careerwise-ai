@@ -1,33 +1,30 @@
+import { useState } from "react";
 import {
     Box,
     Button,
-    Paper,
+    Card,
+    CardContent,
     TextField,
     Typography,
 } from "@mui/material";
-
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import { AuthAPI } from "../../shared/services/api";
 
 export default function Login() {
     const navigate = useNavigate();
-    const location = useLocation();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        setError("");
-        setLoading(true);
-
         try {
+            setLoading(true);
+
             const response = await AuthAPI.login({
                 email,
                 password,
@@ -38,18 +35,17 @@ export default function Login() {
                 response.data.access_token
             );
 
-            const destination =
-                location.state?.from?.pathname || "/";
+            toast.success("Login successful");
 
-            navigate(destination, {
-                replace: true,
-            });
+            navigate("/", { replace: true });
 
-        } catch (err) {
-            setError(
-                err.response?.data?.detail ||
-                "Invalid email or password"
-            );
+        } catch (error) {
+            const message =
+                error?.response?.data?.detail ||
+                "Invalid email or password";
+
+            toast.error(message);
+
         } finally {
             setLoading(false);
         }
@@ -62,80 +58,76 @@ export default function Login() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                p: 2,
+                backgroundColor: "#f5f7fb",
+                px: 2,
             }}
         >
-            <Paper
-                elevation={3}
+            <Card
                 sx={{
                     width: "100%",
                     maxWidth: 420,
-                    p: 4,
                 }}
             >
-                <Typography
-                    variant="h4"
-                    sx={{ mb: 1 }}
-                >
-                    CareerWise
-                </Typography>
+                <CardContent sx={{ p: 4 }}>
 
-                <Typography
-                    color="text.secondary"
-                    sx={{ mb: 3 }}
-                >
-                    Sign in to your account
-                </Typography>
-
-                <Box
-                    component="form"
-                    onSubmit={handleLogin}
-                >
-                    <TextField
-                        fullWidth
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                        sx={{ mb: 2 }}
-                        required
-                    />
-
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) =>
-                            setPassword(e.target.value)
-                        }
-                        sx={{ mb: 2 }}
-                        required
-                    />
-
-                    {error && (
-                        <Typography
-                            color="error"
-                            sx={{ mb: 2 }}
-                        >
-                            {error}
-                        </Typography>
-                    )}
-
-                    <Button
-                        fullWidth
-                        type="submit"
-                        variant="contained"
-                        disabled={loading}
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            fontWeight: 600,
+                            mb: 1,
+                        }}
                     >
-                        {loading
-                            ? "Signing in..."
-                            : "Sign In"}
-                    </Button>
-                </Box>
-            </Paper>
+                        CareerWise
+                    </Typography>
+
+                    <Typography
+                        color="text.secondary"
+                        sx={{ mb: 3 }}
+                    >
+                        Sign in to your account
+                    </Typography>
+
+                    <Box
+                        component="form"
+                        onSubmit={handleSubmit}
+                    >
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(event.target.value)
+                            }
+                            margin="normal"
+                            required
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Password"
+                            type="password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            margin="normal"
+                            required
+                        />
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3 }}
+                            disabled={loading}
+                        >
+                            {loading ? "Signing in..." : "Sign In"}
+                        </Button>
+                    </Box>
+
+                </CardContent>
+            </Card>
         </Box>
     );
 }
