@@ -21,6 +21,7 @@ from app.shared.database.models import *
 from app.api.recruiters import router as recruiter_router
 from app.api.tasks import router as task_router
 
+from app.api.users import router as user_router
 
 app = FastAPI(
     title="CareerWise API",
@@ -52,6 +53,8 @@ app.include_router(ai_router)
 app.include_router(application_router)
 app.include_router(recruiter_router)
 app.include_router(task_router)
+app.include_router(user_router)
+
 
 @app.get("/api/v1/health")
 def health():

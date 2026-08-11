@@ -1,42 +1,65 @@
 import {
-  AppBar,
-  Avatar,
-  Box,
-  Toolbar,
-  Typography,
+    AppBar,
+    Avatar,
+    Box,
+    Button,
+    Toolbar,
+    Typography,
 } from "@mui/material";
 
-export default function Header() {
-  return (
-    <AppBar
-      position="fixed"
-      color="inherit"
-      elevation={1}
-    >
-      <Toolbar>
-        <Typography
-          variant="h6"
-          sx={{ flexGrow: 1 }}
-        >
-          CareerWise
-        </Typography>
+import { useNavigate } from "react-router-dom";
 
-        <Box
+export default function Header() {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login", { replace: true });
+    };
+
+    return (
+        <AppBar
+            position="static"
+            color="transparent"
+            elevation={1}
             sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
+                backgroundColor: "#ffffff",
+                color: "text.primary",
             }}
         >
-          <Typography>
-            Antonio
-          </Typography>
+            <Toolbar>
 
-          <Avatar>
-            A
-          </Avatar>
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
+                <Typography
+                    variant="h6"
+                    sx={{ flexGrow: 1 }}
+                >
+                    CareerWise
+                </Typography>
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                    }}
+                >
+                    <Typography>
+                        Antonio
+                    </Typography>
+
+                    <Avatar>
+                        A
+                    </Avatar>
+
+                    <Button
+                        color="inherit"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
+                </Box>
+
+            </Toolbar>
+        </AppBar>
+    );
 }

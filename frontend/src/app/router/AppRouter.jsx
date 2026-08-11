@@ -5,57 +5,76 @@ import {
 } from "react-router-dom";
 
 import Layout from "../layout/Layout";
+import ProtectedRoute from "./ProtectedRoute";
+
+import Login from "../../features/auth/Login";
 
 import Dashboard from "../../features/dashboard/Dashboard";
 import Companies from "../../features/companies/Companies";
-
 import Applications from "../../features/applications/Applications";
 import Recruiters from "../../features/recruiters/Recruiters";
 import Tasks from "../../features/tasks/Tasks";
 import AICoach from "../../features/ai/AICoach";
 import Settings from "../../features/settings/Settings";
+import Users from "../../features/users/Users";
 
 export default function AppRouter() {
     return (
         <BrowserRouter>
             <Routes>
 
-                <Route element={<Layout />}>
+                {/* Public */}
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
-                    <Route
-                        path="/"
-                        element={<Dashboard />}
-                    />
+                {/* Protected application */}
+                <Route element={<ProtectedRoute />}>
 
-                    <Route
-                        path="/companies"
-                        element={<Companies />}
-                    />
+                    <Route element={<Layout />}>
 
-                    <Route
-                        path="/applications"
-                        element={<Applications />}
-                    />
+                        <Route
+                            path="/"
+                            element={<Dashboard />}
+                        />
 
-                    <Route
-                        path="/recruiters"
-                        element={<Recruiters />}
-                    />
+                        <Route
+                            path="/companies"
+                            element={<Companies />}
+                        />
 
-                    <Route
-                        path="/tasks"
-                        element={<Tasks />}
-                    />
+                        <Route
+                            path="/applications"
+                            element={<Applications />}
+                        />
 
-                    <Route
-                        path="/ai"
-                        element={<AICoach />}
-                    />
+                        <Route
+                            path="/recruiters"
+                            element={<Recruiters />}
+                        />
 
-                    <Route
-                        path="/settings"
-                        element={<Settings />}
-                    />
+                        <Route
+                            path="/tasks"
+                            element={<Tasks />}
+                        />
+
+                        <Route
+                            path="/users"
+                            element={<Users />}
+                        />
+
+                        <Route
+                            path="/ai"
+                            element={<AICoach />}
+                        />
+
+                        <Route
+                            path="/settings"
+                            element={<Settings />}
+                        />
+
+                    </Route>
 
                 </Route>
 
