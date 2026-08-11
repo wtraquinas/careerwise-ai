@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { AuthAPI } from "../../shared/services/api";
 
 export function useCurrentUser() {

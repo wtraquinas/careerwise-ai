@@ -18,6 +18,29 @@ import AICoach from "../../features/ai/AICoach";
 import Settings from "../../features/settings/Settings";
 import Users from "../../features/users/Users";
 
+import { Navigate } from "react-router-dom";
+import { useCurrentUser } from "../../features/auth/hooks";
+
+
+function AdminRoute({ children }) {
+    const { data: user, isLoading } = useCurrentUser();
+
+    if (isLoading) {
+        return null;
+    }
+
+    if (!user) {
+        return <Navigate to="/" replace />;
+    }
+
+    if (user.role !== "admin") {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+}
+
+
 export default function AppRouter() {
     return (
         <BrowserRouter>
@@ -71,7 +94,11 @@ export default function AppRouter() {
 
                         <Route
                             path="/users"
-                            element={<Users />}
+                            element={
+                                <AdminRoute>
+                                    <Users />
+                                </AdminRoute>
+                            }
                         />
 
                     </Route>
