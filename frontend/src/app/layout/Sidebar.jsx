@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 
 import { useCurrentUser } from "../../features/auth/hooks";
 
-const drawerWidth = 240;
+const drawerWidth = 165;
 
 export default function Sidebar() {
     const { data: user } = useCurrentUser();
