@@ -15,7 +15,18 @@ from app.shared.database.base import Base
 class Application(Base):
     __tablename__ = "applications"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
 
     company_id = Column(
         Integer,
@@ -23,9 +34,15 @@ class Application(Base):
         nullable=False,
     )
 
-    position = Column(String, nullable=False)
+    position = Column(
+        String,
+        nullable=False,
+    )
 
-    status = Column(String, default="Applied")
+    status = Column(
+        String,
+        default="Applied",
+    )
 
     salary = Column(String)
 
@@ -34,5 +51,7 @@ class Application(Base):
     applied_date = Column(Date)
 
     notes = Column(Text)
+
+    user = relationship("User")
 
     company = relationship("Company")

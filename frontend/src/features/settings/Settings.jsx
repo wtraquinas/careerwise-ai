@@ -188,26 +188,28 @@ export default function Settings() {
                             }
                             sx={{ mb: 2 }}
                             autoComplete="current-password"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowCurrent(
-                                                    !showCurrent
-                                                )
-                                            }
-                                            edge="end"
-                                            aria-label="show current password"
-                                        >
-                                            {showCurrent ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowCurrent(
+                                                        !showCurrent
+                                                    )
+                                                }
+                                                edge="end"
+                                                aria-label="show current password"
+                                            >
+                                                {showCurrent ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
                             }}
                         />
 
@@ -231,26 +233,28 @@ export default function Settings() {
                             sx={{ mb: 2 }}
                             autoComplete="new-password"
                             helperText="Minimum 8 characters"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowNew(
-                                                    !showNew
-                                                )
-                                            }
-                                            edge="end"
-                                            aria-label="show new password"
-                                        >
-                                            {showNew ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowNew(
+                                                        !showNew
+                                                    )
+                                                }
+                                                edge="end"
+                                                aria-label="show new password"
+                                            >
+                                                {showNew ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },
                             }}
                         />
 
@@ -273,26 +277,28 @@ export default function Settings() {
                             }
                             sx={{ mb: 3 }}
                             autoComplete="new-password"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() =>
-                                                setShowConfirm(
-                                                    !showConfirm
-                                                )
-                                            }
-                                            edge="end"
-                                            aria-label="show confirm password"
-                                        >
-                                            {showConfirm ? (
-                                                <VisibilityOff />
-                                            ) : (
-                                                <Visibility />
-                                            )}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowConfirm(
+                                                        !showConfirm
+                                                    )
+                                                }
+                                                edge="end"
+                                                aria-label="show confirm password"
+                                            >
+                                                {showConfirm ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                },    
                             }}
                         />
 

@@ -132,10 +132,13 @@ export const CompanyAPI = {
 // -------------------------
 // Application API
 // -------------------------
-
+// -------------------------
+// Application API
+// -------------------------
 export const ApplicationAPI = {
+
     getAll() {
-        return api.get("/applications/");
+        return api.get("/applications");
     },
 
     getById(id) {
@@ -143,7 +146,7 @@ export const ApplicationAPI = {
     },
 
     create(data) {
-        return api.post("/applications/", data);
+        return api.post("/applications", data);
     },
 
     update(id, data) {
@@ -153,6 +156,7 @@ export const ApplicationAPI = {
     delete(id) {
         return api.delete(`/applications/${id}`);
     },
+
 };
 
 
