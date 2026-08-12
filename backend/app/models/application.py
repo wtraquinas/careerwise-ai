@@ -52,6 +52,12 @@ class Application(Base):
 
     notes = Column(Text)
 
-    user = relationship("User")
+    user = relationship(
+        "User",
+        back_populates="applications",
+    )
 
-    company = relationship("Company")
+    company = relationship(
+        "Company",
+        back_populates="applications",
+    )
