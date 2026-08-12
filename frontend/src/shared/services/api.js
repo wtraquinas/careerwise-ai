@@ -32,10 +32,18 @@ api.interceptors.request.use((config) => {
 // AI API
 // -------------------------
 export const AIAPI = {
+    // AI Coach chat
+    ask(question) {
+        return api.post("/ai/ask", {
+            question,
+        });
+    },
+
+    // Existing dashboard/application analysis
     analyze() {
         return api.post("/ai/analyze", {});
     },
-    
+
     analyzeApplication(id) {
         return api.post(`/ai/analyze/${id}`);
     },

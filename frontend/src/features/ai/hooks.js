@@ -4,13 +4,16 @@ import { AIAPI } from "../../shared/services/api";
 
 export function useAIChat() {
     return useMutation({
-        mutationFn: AIAPI.chat,
+        mutationFn: AIAPI.ask,
     });
 }
 
 export function useAIAnalysis() {
     return useMutation({
-        mutationFn: AIAPI.analyze,
+        mutationFn: () =>
+            AIAPI.ask(
+                "What should I focus on in my job search?"
+            ),
     });
 }
 

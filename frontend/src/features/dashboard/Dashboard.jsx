@@ -33,19 +33,19 @@ export default function Dashboard() {
 
     const runAnalysis = useCallback(async () => {
         try {
-
             const response =
                 await analysisMutation.mutateAsync();
 
-            setAnalysis(response.data);
+            setAnalysis({
+                answer: response.data.answer,
+                intent: response.data.intent,
+            });
 
         } catch (error) {
-
             console.error(
                 "AI analysis failed:",
                 error
             );
-
         }
     }, [analysisMutation]);
 

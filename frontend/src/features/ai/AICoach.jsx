@@ -24,14 +24,12 @@ import remarkGfm from "remark-gfm";
 
 
 const suggestedPrompts = [
-    "Review my CV for an AI Engineer role",
-    "Prepare me for a Python interview",
-    "Improve my LinkedIn profile",
-    "Generate a cover letter",
-    "How can I negotiate my salary?",
-    "Review this job description",
-    "Should I accept this offer?",
-    "What skills should I learn next?",
+    "What should I focus on in my job search?",
+    "Which applications should I follow up on?",
+    "How should I prepare for my next interview?",
+    "What are my current application priorities?",
+    "Which opportunities need my attention?",
+    "How can I improve my job search strategy?",
 ];
 
 
@@ -85,9 +83,7 @@ export default function AICoach() {
 
         try {
 
-            const response = await chatMutation.mutateAsync({
-                message: question,
-            });
+            const response = await chatMutation.mutateAsync(question);
 
 
             // Add AI response
