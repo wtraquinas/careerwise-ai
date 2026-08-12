@@ -47,6 +47,7 @@ export const AIAPI = {
 // -------------------------
 
 export const AuthAPI = {
+
     login(data) {
         return api.post("/auth/login", data);
     },
@@ -55,8 +56,8 @@ export const AuthAPI = {
         return api.post("/auth/register", data);
     },
 
-    getMe() {
-        return api.get("/auth/me");
+    changePassword(data) {
+        return api.post("/auth/change-password", data);
     },
 };
 
