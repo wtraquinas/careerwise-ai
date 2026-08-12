@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.shared.database.base import Base
 
@@ -29,4 +30,9 @@ class User(Base):
         String(20),
         nullable=False,
         default="user",
+    )
+
+    companies = relationship(
+        "Company",
+        back_populates="user",
     )

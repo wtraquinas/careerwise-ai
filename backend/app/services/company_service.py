@@ -6,21 +6,48 @@ from app.models.company import Company
 class CompanyService:
 
     @staticmethod
-    def get_all(db: Session):
-        return db.query(Company).order_by(Company.name).all()
+    def get_all(
+        db: Session,
+        current_user,
+    ):
+        query = db.query(Company)
+
+        # Admins can see all companies.
+        # Regular users only see their own.
+        if current_user.role != "admin":
+            query = query.filter(
+                Company.user_id == current_user.id
+            )
+
+        return query.order_by(Company.name).all()
 
     @staticmethod
-    def get_by_id(db: Session, company_id: int):
-        return (
-            db.query(Company)
-            .filter(Company.id == company_id)
-            .first()
+    def get_by_id(
+        db: Session,
+        company_id: int,
+        current_user,
+    ):
+        query = db.query(Company).filter(
+            Company.id == company_id
         )
 
-    @staticmethod
-    def create(db: Session, company_data):
+        if current_user.role != "admin":
+            query = query.filter(
+                Company.user_id == current_user.id
+            )
 
-        company = Company(**company_data.model_dump())
+        return query.first()
+
+    @staticmethod
+    def create(
+        db: Session,
+        company_data,
+        current_user,
+    ):
+        company = Company(
+            **company_data.model_dump(),
+            user_id=current_user.id,
+        )
 
         db.add(company)
         db.commit()
@@ -29,9 +56,17 @@ class CompanyService:
         return company
 
     @staticmethod
-    def update(db: Session, company_id: int, company_data):
-
-        company = CompanyService.get_by_id(db, company_id)
+    def update(
+        db: Session,
+        company_id: int,
+        company_data,
+        current_user,
+    ):
+        company = CompanyService.get_by_id(
+            db,
+            company_id,
+            current_user,
+        )
 
         if not company:
             return None
@@ -45,9 +80,16 @@ class CompanyService:
         return company
 
     @staticmethod
-    def delete(db: Session, company_id: int):
-
-        company = CompanyService.get_by_id(db, company_id)
+    def delete(
+        db: Session,
+        company_id: int,
+        current_user,
+    ):
+        company = CompanyService.get_by_id(
+            db,
+            company_id,
+            current_user,
+        )
 
         if not company:
             return False
