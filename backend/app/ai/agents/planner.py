@@ -2,15 +2,20 @@ def plan_question(state):
     """
     Determine the type of career question being asked.
 
-    This is intentionally simple for LangGraph v1.
-    We will replace this with an LLM-based planner later.
+    This is intentionally rule-based for now.
+    It will later be replaced or augmented by an LLM planner.
     """
 
-    question = state["question"].lower()
+    question = state.get("question", "").lower()
+
+    if not question:
+        return {
+            "intent": "general"
+        }
 
     if any(
-        word in question
-        for word in [
+        phrase in question
+        for phrase in [
             "follow up",
             "follow-up",
             "followup",
@@ -18,34 +23,38 @@ def plan_question(state):
             "applications",
         ]
     ):
-        intent = "applications"
+        return {
+            "intent": "applications"
+        }
 
-    elif any(
-        word in question
-        for word in [
+    if any(
+        phrase in question
+        for phrase in [
             "interview",
             "interviews",
             "prepare",
             "preparation",
         ]
     ):
-        intent = "interview"
+        return {
+            "intent": "interview"
+        }
 
-    elif any(
-        word in question
-        for word in [
+    if any(
+        phrase in question
+        for phrase in [
             "career",
             "career advice",
             "what should",
             "recommend",
             "recommendation",
+            "job search",
         ]
     ):
-        intent = "career_strategy"
-
-    else:
-        intent = "general"
+        return {
+            "intent": "career_strategy"
+        }
 
     return {
-        "intent": intent
+        "intent": "general"
     }

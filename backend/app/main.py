@@ -8,8 +8,6 @@ from app.shared.database.session import SessionLocal
 
 from app.api.dashboard import router as dashboard_router
 
-from app.api.ai import router as ai_router
-
 from app.api.applications import router as application_router
 
 from app.shared.database.base import Base
@@ -22,6 +20,8 @@ from app.api.recruiters import router as recruiter_router
 from app.api.tasks import router as task_router
 
 from app.api.users import router as user_router
+
+from app.ai.router import router as ai_router
 
 app = FastAPI(
     title="CareerWise API",
