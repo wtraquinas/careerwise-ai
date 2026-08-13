@@ -9,11 +9,47 @@ from app.features.auth.models import User
 from app.models.user_profile import UserProfile
 from app.services.cv_parser import extract_cv_profile
 
+from pydantic import BaseModel, Field
+from typing import Any
 
 router = APIRouter(
     prefix="/api/v1/profile",
     tags=["Profile"],
 )
+
+class ProfileUpdateRequest(BaseModel):
+    profile_data: dict[str, Any]
+
+@router.put("")
+def update_profile(
+    request: ProfileUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    profile = (
+        db.query(UserProfile)
+        .filter(UserProfile.user_id == current_user.id)
+        .first()
+    )
+
+    if not profile:
+        profile = UserProfile(
+            user_id=current_user.id,
+            profile_data=request.profile_data,
+        )
+
+        db.add(profile)
+
+    else:
+        profile.profile_data = request.profile_data
+
+    db.commit()
+    db.refresh(profile)
+
+    return {
+        "message": "Career profile updated successfully",
+        "profile_data": profile.profile_data or {},
+    }
 
 
 @router.get("")

@@ -31,21 +31,12 @@ api.interceptors.request.use((config) => {
 // -------------------------
 // AI API
 // -------------------------
+
 export const AIAPI = {
-    // AI Coach chat
     ask(question) {
         return api.post("/ai/ask", {
             question,
         });
-    },
-
-    // Existing dashboard/application analysis
-    analyze() {
-        return api.post("/ai/analyze", {});
-    },
-
-    analyzeApplication(id) {
-        return api.post(`/ai/analyze/${id}`);
     },
 };
 
@@ -137,9 +128,7 @@ export const CompanyAPI = {
 
 };
 
-// -------------------------
-// Application API
-// -------------------------
+
 // -------------------------
 // Application API
 // -------------------------
@@ -220,6 +209,53 @@ export const TaskAPI = {
 
     delete(id) {
         return api.delete(`/tasks/${id}`);
+    },
+
+};
+
+
+// -------------------------
+// Profile API
+// -------------------------
+
+export const ProfileAPI = {
+
+    getProfile() {
+
+        return api.get("/profile");
+
+    },
+
+    updateProfile(data) {
+
+        return api.put(
+            "/profile",
+            data
+        );
+
+    },
+
+    uploadCV(file) {
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "file",
+            file
+        );
+
+        return api.post(
+            "/profile/cv",
+            formData,
+            {
+                headers: {
+                    "Content-Type":
+                        "multipart/form-data",
+                },
+            }
+        );
+
     },
 
 };
