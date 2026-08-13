@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, JSON
 from sqlalchemy.orm import relationship
 
 from app.shared.database.base import Base
@@ -24,6 +24,11 @@ class UserProfile(Base):
 
     cv_text = Column(
         Text,
+        nullable=True,
+    )
+
+    profile_data = Column(
+        JSON,
         nullable=True,
     )
 

@@ -8,6 +8,8 @@ from app.dependencies import get_db, get_current_user
 from app.features.auth.models import User
 from app.models.user_profile import UserProfile
 
+from app.services.cv_parser import extract_profile_data
+
 
 router = APIRouter(
     prefix="/api/v1/profile",
@@ -31,6 +33,7 @@ def get_profile(
         "email": current_user.email,
         "cv_filename": profile.cv_filename if profile else None,
         "has_cv": profile is not None and bool(profile.cv_text),
+        "profile_data": profile.profile_data if profile else None,
     }
 
 
@@ -104,6 +107,13 @@ async def upload_cv(
         )
 
     # -----------------------------------------
+    # Extract structured profile information
+    # -----------------------------------------
+
+    profile_data = extract_profile_data(cv_text)
+
+
+    # -----------------------------------------
     # Create or update profile
     # -----------------------------------------
 
@@ -116,11 +126,13 @@ async def upload_cv(
     if profile:
         profile.cv_filename = file.filename
         profile.cv_text = cv_text
+        profile.profile_data = profile_data
     else:
         profile = UserProfile(
             user_id=current_user.id,
             cv_filename=file.filename,
             cv_text=cv_text,
+            profile_data=profile_data,
         )
 
         db.add(profile)
@@ -132,4 +144,5 @@ async def upload_cv(
         "message": "CV uploaded successfully",
         "filename": profile.cv_filename,
         "characters_extracted": len(profile.cv_text),
+        "profile_data": profile.profile_data,
     }
