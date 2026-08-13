@@ -79,6 +79,8 @@ export default function Settings() {
         useState(false);
     const [editingExperience, setEditingExperience] =
         useState(false);
+    const [editingEducation, setEditingEducation] =
+    useState(false);
     
     const saveProfileSection = (
         message = "Profile updated successfully"
@@ -804,6 +806,48 @@ export default function Settings() {
         };
 
 
+    const saveEducation = () => {
+
+        updateProfileMutation.mutate(
+            {
+                profile_data: profileData,
+            },
+            {
+                onSuccess: (response) => {
+
+                    setProfileData(
+                        response.profile_data
+                    );
+
+                    setEditingEducation(false);
+
+                    showSnackbar(
+                        "Education saved successfully"
+                    );
+
+                },
+
+                onError: (error) => {
+
+                    console.error(
+                        "Unable to save education:",
+                        error
+                    );
+
+                    showSnackbar(
+                        "Unable to save education",
+                        "error"
+                    );
+
+                },
+            }
+        );
+
+    };
+
+    
+    // -----------------------------------------
+    // -----------------------------------------
     return (
 
         <Box
@@ -1664,128 +1708,221 @@ export default function Settings() {
                         </Typography>
 
 
-                        {profileData.education.map(
-                            (item, index) => (
+                        {!editingEducation ? (
 
-                                <Card
-                                    key={index}
+                            <>
+                                {profileData.education.length === 0 ? (
+
+                                    <Typography
+                                        color="text.secondary"
+                                        sx={{ mb: 2 }}
+                                    >
+                                        No education added yet.
+                                    </Typography>
+
+                                ) : (
+
+                                    profileData.education.map(
+                                        (item, index) => (
+
+                                            <Card
+                                                key={index}
+                                                variant="outlined"
+                                                sx={{
+                                                    mb: 2,
+                                                    p: 2,
+                                                }}
+                                            >
+
+                                                <Typography
+                                                    variant="subtitle1"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    {item.degree ||
+                                                        "Degree not specified"}
+                                                </Typography>
+
+
+                                                {item.institution && (
+
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        sx={{ mt: 0.5 }}
+                                                    >
+                                                        {item.institution}
+                                                    </Typography>
+
+                                                )}
+
+
+                                                {item.description && (
+
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        sx={{ mt: 1 }}
+                                                    >
+                                                        {item.description}
+                                                    </Typography>
+
+                                                )}
+
+                                            </Card>
+
+                                        )
+                                    )
+
+                                )}
+
+
+                                <Button
                                     variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        setEditingEducation(true)
+                                    }
+                                    sx={{ mb: 4 }}
+                                >
+                                    {profileData.education.length > 0
+                                        ? "Edit Education"
+                                        : "Add Education"}
+                                </Button>
+
+                            </>
+
+                        ) : (
+
+                            <>
+
+                                {profileData.education.map(
+                                    (item, index) => (
+
+                                        <Card
+                                            key={index}
+                                            variant="outlined"
+                                            sx={{
+                                                mb: 2,
+                                                p: 2,
+                                            }}
+                                        >
+
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    mb: 2,
+                                                }}
+                                            >
+
+                                                <Typography
+                                                    variant="subtitle2"
+                                                >
+                                                    Education {index + 1}
+                                                </Typography>
+
+
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() =>
+                                                        deleteEducation(index)
+                                                    }
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+
+                                            </Box>
+
+
+                                            <TextField
+                                                fullWidth
+                                                label="Degree"
+                                                value={item.degree || ""}
+                                                onChange={(event) =>
+                                                    updateEducation(
+                                                        index,
+                                                        "degree",
+                                                        event.target.value
+                                                    )
+                                                }
+                                                sx={{ mb: 2 }}
+                                            />
+
+
+                                            <TextField
+                                                fullWidth
+                                                label="Institution"
+                                                value={
+                                                    item.institution || ""
+                                                }
+                                                onChange={(event) =>
+                                                    updateEducation(
+                                                        index,
+                                                        "institution",
+                                                        event.target.value
+                                                    )
+                                                }
+                                                sx={{ mb: 2 }}
+                                            />
+
+
+                                            <TextField
+                                                fullWidth
+                                                multiline
+                                                minRows={3}
+                                                label="Description"
+                                                value={
+                                                    item.description || ""
+                                                }
+                                                onChange={(event) =>
+                                                    updateEducation(
+                                                        index,
+                                                        "description",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+
+                                        </Card>
+
+                                    )
+                                )}
+
+
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={addEducation}
                                     sx={{
-                                        mb: 2,
-                                        p: 2,
+                                        mr: 2,
+                                        mb: 4,
                                     }}
                                 >
-
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent:
-                                                "space-between",
-                                            mb: 2,
-                                        }}
-                                    >
-
-                                        <Typography
-                                            variant="subtitle2"
-                                        >
-                                            Education {index + 1}
-                                        </Typography>
-
-                                        <IconButton
-                                            color="error"
-                                            onClick={() =>
-                                                deleteEducation(
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-
-                                    </Box>
+                                    Add Education
+                                </Button>
 
 
-                                    <TextField
-                                        fullWidth
-                                        label="Degree"
-                                        value={
-                                            item.degree || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateEducation(
-                                                index,
-                                                "degree",
-                                                event.target.value
-                                            )
-                                        }
-                                        sx={{ mb: 2 }}
-                                    />
+                                <Button
+                                    variant="contained"
+                                    onClick={saveEducation}
+                                    disabled={
+                                        updateProfileMutation.isPending
+                                    }
+                                    sx={{
+                                        mb: 4,
+                                    }}
+                                >
+                                    {updateProfileMutation.isPending
+                                        ? "Saving..."
+                                        : "Save Education"}
+                                </Button>
 
+                            </>
 
-                                    <TextField
-                                        fullWidth
-                                        label="Institution"
-                                        value={
-                                            item.institution || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateEducation(
-                                                index,
-                                                "institution",
-                                                event.target.value
-                                            )
-                                        }
-                                        sx={{ mb: 2 }}
-                                    />
-
-
-                                    <TextField
-                                        fullWidth
-                                        multiline
-                                        minRows={3}
-                                        label="Additional information"
-                                        value={
-                                            item.description || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateEducation(
-                                                index,
-                                                "description",
-                                                event.target.value
-                                            )
-                                        }
-                                    />
-
-                                </Card>
-
-                            )
                         )}
-
-
-                        <Button
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={addEducation}
-                            sx={{ mb: 4 }}
-                        >
-                            Add Education
-                        </Button>
-
-
-                        <Divider sx={{ mb: 3 }} />
-
-
-                        <Button
-                            variant="contained"
-                            onClick={handleSaveProfile}
-                            disabled={isSavingProfile}
-                        >
-
-                            {isSavingProfile
-                                ? "Saving profile..."
-                                : "Save Career Profile"}
-
-                        </Button>
 
                     </CardContent>
 
