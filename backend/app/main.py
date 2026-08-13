@@ -25,6 +25,10 @@ from app.ai.router import router as ai_router
 
 from app.api.profile import router as profile_router
 
+from app.api.cover_letter import (
+    router as cover_letter_router,
+)
+
 app = FastAPI(
     title="CareerWise API",
     version="1.0.0"
@@ -58,6 +62,9 @@ app.include_router(task_router)
 app.include_router(user_router)
 app.include_router(profile_router)
 
+app.include_router(
+    cover_letter_router,
+)
 
 @app.get("/api/v1/health")
 def health():

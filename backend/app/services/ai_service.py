@@ -403,3 +403,158 @@ Keep the analysis concise and practical.
                 "error": "The AI returned an invalid analysis response.",
                 "raw_response": content,
             }
+
+
+    # ---------------------------------------------------------
+    # COVER LETTER GENERATION
+    # ---------------------------------------------------------
+
+    @staticmethod
+    def generate_cover_letter(
+        application_context: dict,
+        profile_data: dict,
+        cv_text: str = "",
+    ) -> str:
+        """
+        Generate a personalized cover letter using application
+        information and the user's career profile.
+        """
+
+        application = application_context.get(
+            "application",
+            {}
+        )
+
+        profile = application_context.get(
+            "profile",
+            profile_data or {}
+        )
+
+        position = (
+            application.get("position")
+            or "the position"
+        )
+
+        company = (
+            application.get("company")
+            or "the company"
+        )
+
+        notes = (
+            application.get("notes")
+            or "No additional job description or notes provided."
+        )
+
+        skills = profile.get("skills", [])
+        projects = profile.get("projects", [])
+        experience = profile.get("experience", [])
+        education = profile.get("education", [])
+        target_roles = profile.get(
+            "target_roles",
+            [],
+        )
+
+        system_prompt = """
+    You are CareerWise AI, an expert career assistant.
+
+    Your task is to write a personalized, professional cover letter.
+
+    Use ONLY information provided in the candidate profile,
+    CV, and application context.
+
+    IMPORTANT RULES:
+
+    - Do not invent skills.
+    - Do not invent employers.
+    - Do not invent projects.
+    - Do not invent degrees or education.
+    - Do not invent achievements, metrics, certifications,
+    responsibilities, or years of experience.
+    - Do not claim that the candidate has experience that is
+    not supported by the provided information.
+    - Select only the information that is most relevant to the
+    position.
+    - Do not simply list every skill or project.
+    - If information about the job requirements is limited,
+    focus on the position title and available application notes.
+    - Write naturally and professionally.
+    - Avoid exaggerated or overly generic language.
+    - Keep the letter concise, approximately 250–350 words.
+    - Use a standard cover letter structure.
+    - Start with "Dear Hiring Manager,".
+    - Do not include placeholders such as [Your Name].
+    - Do not add commentary before or after the cover letter.
+    - Return only the finished cover letter.
+    """
+
+        user_prompt = f"""
+    ## APPLICATION
+
+    Company:
+    {company}
+
+    Position:
+    {position}
+
+    Application status:
+    {application.get("status") or "Not specified"}
+
+    Application notes / job information:
+    {notes}
+
+    ---
+
+    ## CANDIDATE PROFILE
+
+    Target roles:
+    {", ".join(target_roles) if target_roles else "Not specified"}
+
+    Skills:
+    {", ".join(skills) if skills else "Not specified"}
+
+    Projects:
+    {json.dumps(projects, indent=2) if projects else "Not specified"}
+
+    Experience:
+    {json.dumps(experience, indent=2) if experience else "Not specified"}
+
+    Education:
+    {json.dumps(education, indent=2) if education else "Not specified"}
+
+    ---
+
+    ## SUPPORTING CV INFORMATION
+
+    {cv_text[:6000] if cv_text else "No CV text available."}
+
+    ---
+
+    Write a personalized cover letter for this application.
+    Prioritize the strongest and most relevant evidence from the
+    candidate's profile.
+    """
+
+        response = client.chat.completions.create(
+            model="gpt-5-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+            ],
+            max_completion_tokens=1200,
+        )
+
+        content = response.choices[0].message.content
+
+        if not content:
+            return (
+                "I wasn't able to generate a cover letter "
+                "right now. Please try again."
+            )
+
+        return content
