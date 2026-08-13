@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const statusColor = {
     Applied: "primary",
@@ -21,7 +22,8 @@ export const applicationColumns = (
     companyMap,
     onEdit,
     onDelete,
-    onAnalyze
+    onAnalyze,
+    onGenerateCoverLetter
 ) => [
 
     {
@@ -67,7 +69,7 @@ export const applicationColumns = (
     {
         field: "actions",
         headerName: "Actions",
-        width: 150,
+        width: 200,
         sortable: false,
         filterable: false,
 
@@ -77,6 +79,7 @@ export const applicationColumns = (
                     color="primary"
                     size="small"
                     onClick={() => onEdit(row)}
+                    title="Edit Application"
                 >
                     <EditIcon />
                 </IconButton>
@@ -85,14 +88,27 @@ export const applicationColumns = (
                     color="secondary"
                     size="small"
                     onClick={() => onAnalyze(row)}
+                    title="AI Application Analysis"
                 >
                     <AutoAwesomeIcon />
+                </IconButton>
+
+                <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={() =>
+                        onGenerateCoverLetter(row)
+                    }
+                    title="Generate Cover Letter"
+                >
+                    <DescriptionIcon />
                 </IconButton>
 
                 <IconButton
                     color="error"
                     size="small"
                     onClick={() => onDelete(row)}
+                    title="Delete Application"
                 >
                     <DeleteIcon />
                 </IconButton>

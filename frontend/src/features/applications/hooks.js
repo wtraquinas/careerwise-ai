@@ -4,6 +4,7 @@ import {
     ApplicationAPI,
 } from "../../shared/services/api";
 
+
 export function useApplications() {
     return useQuery({
         queryKey: ["applications"],
@@ -87,3 +88,22 @@ export function useDeleteApplication() {
   });
 
 }
+
+export const useGenerateCoverLetter = () => {
+
+    return useMutation({
+
+        mutationFn: async (applicationId) => {
+
+            const response =
+                await ApplicationAPI.generateCoverLetter(
+                    applicationId
+                );
+
+            return response.data;
+
+        },
+
+    });
+
+};

@@ -154,6 +154,12 @@ export const ApplicationAPI = {
         return api.delete(`/applications/${id}`);
     },
 
+    generateCoverLetter(applicationId) {
+        return api.post(
+            `/ai/cover-letter/${applicationId}`
+        );
+    },
+
 };
 
 

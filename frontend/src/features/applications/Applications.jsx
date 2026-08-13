@@ -1,10 +1,15 @@
 import { useMemo, useState } from "react";
 
 import {
-    Typography,
-    TextField,
-    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     Button,
+    Typography,
+    Box,
+    TextField,
+    IconButton,
     CircularProgress,
 } from "@mui/material";
 
@@ -15,6 +20,7 @@ import {
     useCreateApplication,
     useUpdateApplication,
     useDeleteApplication,
+    useGenerateCoverLetter,
 } from "./hooks";
 
 import { useCompanies } from "../companies/hooks";
@@ -30,6 +36,10 @@ import {
 } from "../ai/hooks";
 
 import AIAnalysisDialog from "../ai/AIAnalysisDialog";
+
+import ContentCopyIcon from
+    "@mui/icons-material/ContentCopy";
+
 
 export default function Applications() {
 
@@ -57,6 +67,19 @@ export default function Applications() {
       message: "",
       severity: "success",
     });
+
+    const showSnackbar = (
+        message,
+        severity = "success"
+    ) => {
+
+        setSnackbar({
+            open: true,
+            message,
+            severity,
+        });
+
+    };
     
     const createMutation = useCreateApplication();
     const updateMutation = useUpdateApplication();
@@ -116,6 +139,17 @@ export default function Applications() {
             );
         }
     };
+
+    const [coverLetterDialogOpen, setCoverLetterDialogOpen] =
+        useState(false);
+
+    const [generatedCoverLetter, setGeneratedCoverLetter] =
+        useState("");
+
+    const generateCoverLetterMutation =
+        useGenerateCoverLetter();
+
+    
 
     
 
@@ -177,6 +211,49 @@ export default function Applications() {
                 severity: "error",
             });
         }
+    };
+
+
+    const handleGenerateCoverLetter =
+    async (application) => {
+
+        // Store the application being processed
+        setSelectedApplication(application);
+
+        // Clear any previous cover letter
+        setGeneratedCoverLetter("");
+
+        // Open the dialog immediately
+        setCoverLetterDialogOpen(true);
+
+        generateCoverLetterMutation.mutate(
+            application.id,
+            {
+
+                onSuccess: (data) => {
+
+                    setGeneratedCoverLetter(
+                        data.cover_letter
+                    );
+
+                },
+
+                onError: (error) => {
+
+                    console.error(
+                        "Cover letter generation failed:",
+                        error
+                    );
+
+                    setGeneratedCoverLetter(
+                        "I wasn't able to generate a cover letter right now. Please try again."
+                    );
+
+                },
+
+            }
+        );
+
     };
 
 
@@ -297,8 +374,7 @@ export default function Applications() {
                 >
                     Add Application
                 </Button>
-
-                
+                             
 
             </Box>
 
@@ -314,6 +390,10 @@ export default function Applications() {
                 onDelete={handleDeleteClick}
 
                 onAnalyze={handleAnalyze}
+
+                onGenerateCoverLetter={
+                    handleGenerateCoverLetter
+                }
             />
 
             <AIAnalysisDialog
@@ -359,10 +439,145 @@ export default function Applications() {
               }
             />
 
+            <Dialog
+                open={coverLetterDialogOpen}
+                onClose={() => {
+
+                    if (
+                        !generateCoverLetterMutation.isPending
+                    ) {
+                        setCoverLetterDialogOpen(false);
+                    }
+
+                }}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle>
+                    Generate Cover Letter
+                </DialogTitle>
+
+                <DialogContent>
+
+                    {generateCoverLetterMutation.isPending ? (
+
+                        <Box
+                            sx={{
+                                minHeight: 300,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 2,
+                            }}
+                        >
+
+                            <CircularProgress />
+
+                            <Typography
+                                variant="h6"
+                            >
+                                CareerWise AI is working...
+                            </Typography>
+
+                            <Typography
+                                color="text.secondary"
+                                textAlign="center"
+                            >
+                                Generating a personalized cover letter
+                                based on your application and career profile.
+                            </Typography>
+
+                        </Box>
+
+                    ) : (
+
+                        <TextField
+                            fullWidth
+                            multiline
+                            minRows={18}
+                            value={
+                                generatedCoverLetter || ""
+                            }
+                            onChange={(event) =>
+                                setGeneratedCoverLetter(
+                                    event.target.value
+                                )
+                            }
+                        />
+
+                    )}
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button
+                        startIcon={<ContentCopyIcon />}
+                        onClick={async () => {
+
+                            try {
+
+                                await navigator.clipboard.writeText(
+                                    generatedCoverLetter
+                                );
+
+                                showSnackbar(
+                                    "Cover letter copied to clipboard"
+                                );
+
+                            } catch (error) {
+
+                                console.error(
+                                    "Failed to copy cover letter:",
+                                    error
+                                );
+
+                                showSnackbar(
+                                    "Could not copy cover letter"
+                                );
+
+                            }
+
+                        }}
+                        disabled={
+                            generateCoverLetterMutation.isPending ||
+                            !generatedCoverLetter
+                        }
+                    >
+                        Copy
+                    </Button>
+
+                    <Button
+                        onClick={() =>
+                            setCoverLetterDialogOpen(false)
+                        }
+                        disabled={
+                            generateCoverLetterMutation.isPending
+                        }
+                    >
+                        Close
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
             {/*
                 DeleteDialog
                 (We'll connect this next)
             */}
+            <AppSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={() =>
+                    setSnackbar((current) => ({
+                        ...current,
+                        open: false,
+                    }))
+                }
+            />
 
         </>
 

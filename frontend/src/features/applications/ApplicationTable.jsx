@@ -8,6 +8,7 @@ export default function ApplicationTable({
     onEdit,
     onDelete,
     onAnalyze,
+    onGenerateCoverLetter,
 }) {
 
     return (
@@ -24,7 +25,9 @@ export default function ApplicationTable({
 
                 onDelete,
 
-                onAnalyze
+                onAnalyze,
+
+                onGenerateCoverLetter
 
             )}
 
