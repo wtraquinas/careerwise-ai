@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+)
 
-from app.dependencies import get_db
+from app.dependencies import (
+    get_db,
+    get_current_user,
+)
+
+from app.features.auth.models import User
+from app.models.application import Application
 
 from app.services.ai_service import AIService
+from sqlalchemy.orm import Session
 
 from app.schemas.ai import (
     AIChatRequest,
@@ -38,11 +49,29 @@ def analyze_career(
 ):
     return AIService.analyze(db)
 
+
 @router.post("/analyze/{application_id}")
 def analyze_application(
     application_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    application = (
+        db.query(Application)
+        .filter(
+            Application.id == application_id,
+            Application.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not application:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Application not found",
+        )
+
     return AIService.analyze_application(
         db,
         application_id,

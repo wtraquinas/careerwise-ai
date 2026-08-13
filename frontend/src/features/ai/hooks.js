@@ -23,10 +23,14 @@ export function useAIAnalysis() {
 
 // Temporary compatibility hook for Applications.jsx
 export function useAIApplicationAnalysis() {
+
     return useMutation({
-        mutationFn: (id) =>
-            AIAPI.ask(
-                `Please analyze my application with ID ${id} and provide career advice.`
+
+        mutationFn: (applicationId) =>
+            AIAPI.analyzeApplication(
+                applicationId
             ),
+
     });
+
 }

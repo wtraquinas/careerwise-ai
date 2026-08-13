@@ -38,6 +38,12 @@ export const AIAPI = {
             question,
         });
     },
+
+    analyzeApplication(applicationId) {
+        return api.post(
+            `/ai/analyze/${applicationId}`
+        );
+    },
 };
 
 

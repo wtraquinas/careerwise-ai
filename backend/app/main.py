@@ -25,6 +25,8 @@ from app.ai.router import router as ai_router
 
 from app.api.profile import router as profile_router
 
+from app.api.ai import router as ai_api_router
+
 from app.api.cover_letter import (
     router as cover_letter_router,
 )
@@ -55,7 +57,13 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(company_router)
 app.include_router(dashboard_router)
+
+# AI Graph / CareerWise Agent
 app.include_router(ai_router)
+
+# AI Service endpoints
+app.include_router(ai_api_router)
+
 app.include_router(application_router)
 app.include_router(recruiter_router)
 app.include_router(task_router)
