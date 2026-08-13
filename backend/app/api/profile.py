@@ -1,0 +1,135 @@
+from io import BytesIO
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from pypdf import PdfReader
+from sqlalchemy.orm import Session
+
+from app.dependencies import get_db, get_current_user
+from app.features.auth.models import User
+from app.models.user_profile import UserProfile
+
+
+router = APIRouter(
+    prefix="/api/v1/profile",
+    tags=["Profile"],
+)
+
+
+@router.get("")
+def get_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    profile = (
+        db.query(UserProfile)
+        .filter(UserProfile.user_id == current_user.id)
+        .first()
+    )
+
+    return {
+        "user_id": current_user.id,
+        "email": current_user.email,
+        "cv_filename": profile.cv_filename if profile else None,
+        "has_cv": profile is not None and bool(profile.cv_text),
+    }
+
+
+@router.post("/cv")
+async def upload_cv(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # -----------------------------------------
+    # Validate file
+    # -----------------------------------------
+
+    if not file.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No file provided",
+        )
+
+    if not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are supported",
+        )
+
+    # -----------------------------------------
+    # Read file
+    # -----------------------------------------
+
+    file_bytes = await file.read()
+
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+
+    if len(file_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File is too large. Maximum size is 10 MB.",
+        )
+
+    if not file_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is empty",
+        )
+
+    # -----------------------------------------
+    # Extract PDF text
+    # -----------------------------------------
+
+    try:
+        reader = PdfReader(BytesIO(file_bytes))
+
+        cv_text = "\n".join(
+            page.extract_text() or ""
+            for page in reader.pages
+        ).strip()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not read PDF: {str(e)}",
+        )
+
+    if not cv_text:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "No text could be extracted from this PDF. "
+                "Please upload a text-based PDF."
+            ),
+        )
+
+    # -----------------------------------------
+    # Create or update profile
+    # -----------------------------------------
+
+    profile = (
+        db.query(UserProfile)
+        .filter(UserProfile.user_id == current_user.id)
+        .first()
+    )
+
+    if profile:
+        profile.cv_filename = file.filename
+        profile.cv_text = cv_text
+    else:
+        profile = UserProfile(
+            user_id=current_user.id,
+            cv_filename=file.filename,
+            cv_text=cv_text,
+        )
+
+        db.add(profile)
+
+    db.commit()
+    db.refresh(profile)
+
+    return {
+        "message": "CV uploaded successfully",
+        "filename": profile.cv_filename,
+        "characters_extracted": len(profile.cv_text),
+    }

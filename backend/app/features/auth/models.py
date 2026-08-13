@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.shared.database.base import Base
 
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -41,4 +42,10 @@ class User(Base):
         "Application",
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+
+    profile = relationship(
+        "UserProfile",
+        back_populates="user",
+        uselist=False,
     )
