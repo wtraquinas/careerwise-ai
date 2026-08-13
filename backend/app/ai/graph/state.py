@@ -23,4 +23,6 @@ class CareerWiseState(TypedDict, total=False):
 
     agent_results: list[dict]
 
+    profile_data: dict
+
     final_answer: str

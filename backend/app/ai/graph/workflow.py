@@ -3,23 +3,12 @@ from langgraph.graph import StateGraph, START, END
 from app.ai.graph.state import CareerWiseState
 
 from app.ai.agents.planner import plan_question
+from app.ai.agents.career_crm import career_crm_agent
+from app.ai.agents.application_coach import application_coach_agent
+from app.ai.agents.interview_coach import interview_coach_agent
+from app.ai.agents.career_strategy import career_strategy_agent
 
-from app.ai.agents.career_crm import (
-    career_crm_agent,
-)
-
-from app.ai.agents.application_coach import (
-    application_coach_agent,
-)
-
-from app.ai.agents.interview_coach import (
-    interview_coach_agent,
-)
-
-from app.ai.agents.career_strategy import (
-    career_strategy_agent,
-)
-
+from app.ai.graph.nodes.profile import get_user_profile
 from app.shared.database.session import SessionLocal
 
 
@@ -35,7 +24,6 @@ def crm_node(state: CareerWiseState):
             state,
             db,
         )
-
     finally:
         db.close()
 
@@ -45,10 +33,7 @@ def route_after_planner(state: CareerWiseState):
     Route the request based on the planner intent.
     """
 
-    intent = state.get(
-        "intent",
-        "general",
-    )
+    intent = state.get("intent", "general")
 
     if intent == "applications":
         return "applications"
@@ -63,12 +48,35 @@ def route_after_planner(state: CareerWiseState):
 
 
 def build_graph():
+    """
+    Build the CareerWise AI LangGraph workflow.
+
+    Flow:
+
+    START
+      ↓
+    get_user_profile
+      ↓
+    planner
+      ↓
+    career_crm
+      ↓
+    conditional routing
+      ├── application_coach
+      ├── interview_coach
+      └── career_strategy
+    """
 
     graph = StateGraph(CareerWiseState)
 
     # -------------------------------------------------
     # Nodes
     # -------------------------------------------------
+
+    graph.add_node(
+        "get_user_profile",
+        get_user_profile,
+    )
 
     graph.add_node(
         "planner",
@@ -96,17 +104,18 @@ def build_graph():
     )
 
     # -------------------------------------------------
-    # Start
+    # Workflow
     # -------------------------------------------------
 
     graph.add_edge(
         START,
-        "planner",
+        "get_user_profile",
     )
 
-    # -------------------------------------------------
-    # Route all questions through CRM first
-    # -------------------------------------------------
+    graph.add_edge(
+        "get_user_profile",
+        "planner",
+    )
 
     graph.add_edge(
         "planner",
@@ -114,7 +123,7 @@ def build_graph():
     )
 
     # -------------------------------------------------
-    # Conditional routing after CRM
+    # Conditional routing
     # -------------------------------------------------
 
     graph.add_conditional_edges(

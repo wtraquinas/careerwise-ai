@@ -1,209 +1,76 @@
 import re
 
 
-KNOWN_SKILLS = [
+SKILL_KEYWORDS = [
     "Python",
     "SQL",
     "Machine Learning",
     "Deep Learning",
+    "Artificial Intelligence",
     "FastAPI",
     "Streamlit",
     "LangChain",
     "LangGraph",
     "Docker",
+    "Git",
     "PostgreSQL",
     "Pandas",
     "NumPy",
-    "Scikit-learn",
+    "scikit-learn",
     "TensorFlow",
     "PyTorch",
-    "React",
-    "JavaScript",
-    "Git",
-    "GitHub",
-    "AWS",
-    "Azure",
-    "OpenAI",
-    "RAG",
     "NLP",
+    "RAG",
+    "OpenAI",
+    "REST API",
 ]
 
 
-TARGET_ROLES = [
+ROLE_KEYWORDS = [
     "AI Engineer",
     "Machine Learning Engineer",
     "Data Scientist",
     "Data Engineer",
     "Application Support Engineer",
     "Software Engineer",
-    "Backend Engineer",
     "Python Developer",
+    "Backend Developer",
 ]
 
 
-def extract_profile_data(cv_text: str) -> dict:
-    """
-    Extract structured profile information from CV text.
+def extract_skills(cv_text: str) -> list[str]:
+    found_skills = []
 
-    This is a deterministic MVP parser.
-    It can later be replaced with an LLM-based extractor.
-    """
+    for skill in SKILL_KEYWORDS:
+        if re.search(
+            rf"\b{re.escape(skill)}\b",
+            cv_text,
+            re.IGNORECASE,
+        ):
+            found_skills.append(skill)
 
-    text_lower = cv_text.lower()
+    return sorted(set(found_skills))
 
-    skills = []
 
-    for skill in KNOWN_SKILLS:
-        if skill.lower() in text_lower:
-            skills.append(skill)
+def extract_target_roles(cv_text: str) -> list[str]:
+    found_roles = []
 
-    target_roles = []
+    for role in ROLE_KEYWORDS:
+        if re.search(
+            rf"\b{re.escape(role)}\b",
+            cv_text,
+            re.IGNORECASE,
+        ):
+            found_roles.append(role)
 
-    for role in TARGET_ROLES:
-        if role.lower() in text_lower:
-            target_roles.append(role)
+    return sorted(set(found_roles))
 
-    projects = extract_projects(cv_text)
 
-    experience = extract_experience(cv_text)
-
-    education = extract_education(cv_text)
-
+def extract_cv_profile(cv_text: str) -> dict:
     return {
-        "skills": sorted(list(set(skills))),
-        "projects": projects,
-        "experience": experience,
-        "education": education,
-        "target_roles": sorted(list(set(target_roles))),
+        "skills": extract_skills(cv_text),
+        "projects": [],
+        "experience": [],
+        "education": [],
+        "target_roles": extract_target_roles(cv_text),
     }
-
-
-def extract_projects(cv_text: str) -> list[dict]:
-    """
-    Basic project extraction.
-
-    MVP implementation.
-    """
-
-    projects = []
-
-    lines = cv_text.splitlines()
-
-    project_section = False
-
-    for line in lines:
-
-        line = line.strip()
-
-        if not line:
-            continue
-
-        if line.lower() in [
-            "projects",
-            "personal projects",
-            "portfolio projects",
-        ]:
-            project_section = True
-            continue
-
-        if project_section and line.lower() in [
-            "experience",
-            "education",
-            "skills",
-            "work experience",
-        ]:
-            project_section = False
-
-        if project_section and len(line) > 3:
-
-            projects.append(
-                {
-                    "name": line,
-                }
-            )
-
-    return projects[:10]
-
-
-def extract_experience(cv_text: str) -> list[dict]:
-    """
-    Placeholder experience extraction.
-    """
-
-    experience = []
-
-    lines = cv_text.splitlines()
-
-    experience_section = False
-
-    for line in lines:
-
-        line = line.strip()
-
-        if not line:
-            continue
-
-        if line.lower() in [
-            "experience",
-            "work experience",
-            "professional experience",
-        ]:
-            experience_section = True
-            continue
-
-        if experience_section and line.lower() in [
-            "education",
-            "skills",
-            "projects",
-        ]:
-            experience_section = False
-
-        if experience_section and len(line) > 5:
-
-            experience.append(
-                {
-                    "description": line,
-                }
-            )
-
-    return experience[:20]
-
-
-def extract_education(cv_text: str) -> list[dict]:
-    """
-    Basic education extraction.
-    """
-
-    education = []
-
-    lines = cv_text.splitlines()
-
-    education_section = False
-
-    for line in lines:
-
-        line = line.strip()
-
-        if not line:
-            continue
-
-        if line.lower() == "education":
-            education_section = True
-            continue
-
-        if education_section and line.lower() in [
-            "skills",
-            "experience",
-            "projects",
-        ]:
-            education_section = False
-
-        if education_section:
-
-            education.append(
-                {
-                    "description": line,
-                }
-            )
-
-    return education[:10]

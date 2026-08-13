@@ -7,8 +7,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db, get_current_user
 from app.features.auth.models import User
 from app.models.user_profile import UserProfile
-
-from app.services.cv_parser import extract_profile_data
+from app.services.cv_parser import extract_cv_profile
 
 
 router = APIRouter(
@@ -33,8 +32,9 @@ def get_profile(
         "email": current_user.email,
         "cv_filename": profile.cv_filename if profile else None,
         "has_cv": profile is not None and bool(profile.cv_text),
-        "profile_data": profile.profile_data if profile else None,
+        "profile_data": profile.profile_data if profile else {},
     }
+
 
 
 @router.post("/cv")
@@ -107,14 +107,20 @@ async def upload_cv(
         )
 
     # -----------------------------------------
-    # Extract structured profile information
+    # Extract structured CV profile data
     # -----------------------------------------
 
-    profile_data = extract_profile_data(cv_text)
+    try:
+        profile_data = extract_cv_profile(cv_text)
 
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Could not extract profile data: {str(e)}",
+        )
 
     # -----------------------------------------
-    # Create or update profile
+    # Find existing profile
     # -----------------------------------------
 
     profile = (
@@ -123,10 +129,15 @@ async def upload_cv(
         .first()
     )
 
+    # -----------------------------------------
+    # Create or update profile
+    # -----------------------------------------
+
     if profile:
         profile.cv_filename = file.filename
         profile.cv_text = cv_text
         profile.profile_data = profile_data
+
     else:
         profile = UserProfile(
             user_id=current_user.id,
@@ -137,8 +148,16 @@ async def upload_cv(
 
         db.add(profile)
 
+    # -----------------------------------------
+    # Save changes
+    # -----------------------------------------
+
     db.commit()
     db.refresh(profile)
+
+    # -----------------------------------------
+    # Return result
+    # -----------------------------------------
 
     return {
         "message": "CV uploaded successfully",

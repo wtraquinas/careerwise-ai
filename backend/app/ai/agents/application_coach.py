@@ -14,6 +14,14 @@ def application_coach_agent(state):
 
     recommendations = []
 
+    profile_data = state.get("profile_data", {})
+
+    skills = profile_data.get("skills", [])
+    projects = profile_data.get("projects", [])
+    experience = profile_data.get("experience", [])
+    education = profile_data.get("education", [])
+    target_roles = profile_data.get("target_roles", [])
+
     for application in applications:
 
         company = (
