@@ -77,7 +77,9 @@ export default function Settings() {
 
     const [editingProjects, setEditingProjects] =
         useState(false);
-
+    const [editingExperience, setEditingExperience] =
+        useState(false);
+    
     const saveProfileSection = (
         message = "Profile updated successfully"
     ) => {
@@ -651,6 +653,7 @@ export default function Settings() {
 
     const addExperience = () => {
 
+
         setProfileData((current) => ({
             ...current,
             experience: [
@@ -703,6 +706,44 @@ export default function Settings() {
 
         };
 
+    const saveExperience = () => {
+
+        updateProfileMutation.mutate(
+            {
+                profile_data: profileData,
+            },
+            {
+                onSuccess: (response) => {
+
+                    setProfileData(
+                        response.profile_data
+                    );
+
+                    setEditingExperience(false);
+
+                    showSnackbar(
+                        "Experience saved successfully"
+                    );
+
+                },
+
+                onError: (error) => {
+
+                    console.error(
+                        "Unable to save experience:",
+                        error
+                    );
+
+                    showSnackbar(
+                        "Unable to save experience",
+                        "error"
+                    );
+
+                },
+            }
+        );
+
+    };
 
     // -----------------------------------------
     // Education
@@ -1394,112 +1435,220 @@ export default function Settings() {
                         </Typography>
 
 
-                        {profileData.experience.map(
-                            (item, index) => (
+                        {!editingExperience ? (
 
-                                <Card
-                                    key={index}
+                            <>
+                                {profileData.experience.length === 0 ? (
+
+                                    <Typography
+                                        color="text.secondary"
+                                        sx={{ mb: 2 }}
+                                    >
+                                        No experience added yet.
+                                    </Typography>
+
+                                ) : (
+
+                                    profileData.experience.map(
+                                        (item, index) => (
+
+                                            <Card
+                                                key={index}
+                                                variant="outlined"
+                                                sx={{
+                                                    mb: 2,
+                                                    p: 2,
+                                                }}
+                                            >
+                                                <Typography
+                                                    variant="subtitle1"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    {item.role ||
+                                                        "Role not specified"}
+                                                </Typography>
+
+
+                                                {item.company && (
+
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        sx={{ mt: 0.5 }}
+                                                    >
+                                                        {item.company}
+                                                    </Typography>
+
+                                                )}
+
+
+                                                {item.description && (
+
+                                                    <Typography
+                                                        variant="body2"
+                                                        color="text.secondary"
+                                                        sx={{ mt: 1 }}
+                                                    >
+                                                        {item.description}
+                                                    </Typography>
+
+                                                )}
+
+                                            </Card>
+
+                                        )
+                                    )
+
+                                )}
+
+
+                                <Button
                                     variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={() =>
+                                        setEditingExperience(true)
+                                    }
+                                    sx={{ mb: 4 }}
+                                >
+                                    {profileData.experience.length > 0
+                                        ? "Edit Experience"
+                                        : "Add Experience"}
+                                </Button>
+
+                            </>
+
+                        ) : (
+
+                            <>
+
+                                {profileData.experience.map(
+                                    (item, index) => (
+
+                                        <Card
+                                            key={index}
+                                            variant="outlined"
+                                            sx={{
+                                                mb: 2,
+                                                p: 2,
+                                            }}
+                                        >
+
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    mb: 2,
+                                                }}
+                                            >
+
+                                                <Typography
+                                                    variant="subtitle2"
+                                                >
+                                                    Experience {index + 1}
+                                                </Typography>
+
+
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() =>
+                                                        deleteExperience(index)
+                                                    }
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+
+                                            </Box>
+
+
+                                            <TextField
+                                                fullWidth
+                                                label="Role"
+                                                value={item.role || ""}
+                                                onChange={(event) =>
+                                                    updateExperience(
+                                                        index,
+                                                        "role",
+                                                        event.target.value
+                                                    )
+                                                }
+                                                sx={{ mb: 2 }}
+                                            />
+
+
+                                            <TextField
+                                                fullWidth
+                                                label="Company"
+                                                value={
+                                                    item.company || ""
+                                                }
+                                                onChange={(event) =>
+                                                    updateExperience(
+                                                        index,
+                                                        "company",
+                                                        event.target.value
+                                                    )
+                                                }
+                                                sx={{ mb: 2 }}
+                                            />
+
+
+                                            <TextField
+                                                fullWidth
+                                                multiline
+                                                minRows={3}
+                                                label="Description"
+                                                value={
+                                                    item.description || ""
+                                                }
+                                                onChange={(event) =>
+                                                    updateExperience(
+                                                        index,
+                                                        "description",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+
+                                        </Card>
+
+                                    )
+                                )}
+
+
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={addExperience}
                                     sx={{
-                                        mb: 2,
-                                        p: 2,
+                                        mr: 2,
+                                        mb: 4,
                                     }}
                                 >
-
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent:
-                                                "space-between",
-                                            mb: 2,
-                                        }}
-                                    >
-
-                                        <Typography
-                                            variant="subtitle2"
-                                        >
-                                            Experience {index + 1}
-                                        </Typography>
-
-                                        <IconButton
-                                            color="error"
-                                            onClick={() =>
-                                                deleteExperience(
-                                                    index
-                                                )
-                                            }
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-
-                                    </Box>
+                                    Add Experience
+                                </Button>
 
 
-                                    <TextField
-                                        fullWidth
-                                        label="Role"
-                                        value={
-                                            item.role || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateExperience(
-                                                index,
-                                                "role",
-                                                event.target.value
-                                            )
-                                        }
-                                        sx={{ mb: 2 }}
-                                    />
+                                <Button
+                                    variant="contained"
+                                    onClick={saveExperience}
+                                    disabled={
+                                        updateProfileMutation.isPending
+                                    }
+                                    sx={{
+                                        mb: 4,
+                                    }}
+                                >
+                                    {updateProfileMutation.isPending
+                                        ? "Saving..."
+                                        : "Save Experience"}
+                                </Button>
 
+                            </>
 
-                                    <TextField
-                                        fullWidth
-                                        label="Company"
-                                        value={
-                                            item.company || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateExperience(
-                                                index,
-                                                "company",
-                                                event.target.value
-                                            )
-                                        }
-                                        sx={{ mb: 2 }}
-                                    />
-
-
-                                    <TextField
-                                        fullWidth
-                                        multiline
-                                        minRows={3}
-                                        label="Description"
-                                        value={
-                                            item.description || ""
-                                        }
-                                        onChange={(event) =>
-                                            updateExperience(
-                                                index,
-                                                "description",
-                                                event.target.value
-                                            )
-                                        }
-                                    />
-
-                                </Card>
-
-                            )
                         )}
-
-
-                        <Button
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={addExperience}
-                            sx={{ mb: 4 }}
-                        >
-                            Add Experience
-                        </Button>
 
 
                         {/* Education */}
