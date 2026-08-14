@@ -12,7 +12,19 @@ import { useNavigate } from "react-router-dom";
 
 import { AuthAPI } from "../../shared/services/api";
 
-export default function Header() {
+import IconButton from "@mui/material/IconButton";
+
+import LightModeIcon
+    from "@mui/icons-material/LightMode";
+
+import DarkModeIcon
+    from "@mui/icons-material/DarkMode";
+
+
+export default function Header({
+    mode,
+    toggleTheme,
+}) {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
@@ -64,7 +76,7 @@ export default function Header() {
             color="transparent"
             elevation={1}
             sx={{
-                backgroundColor: "#ffffff",
+                backgroundColor: "background.paper",
                 color: "text.primary",
             }}
         >
@@ -84,6 +96,17 @@ export default function Header() {
                         gap: 2,
                     }}
                 >
+                    <IconButton
+                        onClick={toggleTheme}
+                        color="inherit"
+                    >
+                        {mode === "dark" ? (
+                            <LightModeIcon />
+                        ) : (
+                            <DarkModeIcon />
+                        )}
+                    </IconButton>
+                    
                     <Typography>
                         {userName}
                     </Typography>

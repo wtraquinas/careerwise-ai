@@ -1,7 +1,15 @@
 import AppRouter from "./app/router/AppRouter";
 
-function App() {
-    return <AppRouter />;
-}
 
-export default App;
+export default function App({
+    darkMode,
+    toggleTheme,
+}) {
+
+    return (
+        <AppRouter
+            darkMode={darkMode}
+            toggleTheme={toggleTheme}
+        />
+    );
+}

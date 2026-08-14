@@ -41,7 +41,10 @@ function AdminRoute({ children }) {
 }
 
 
-export default function AppRouter() {
+export default function AppRouter({
+    mode,
+    toggleTheme,
+}) {
     return (
         <BrowserRouter>
 
@@ -55,7 +58,14 @@ export default function AppRouter() {
 
                 {/* Protected */}
                 <Route element={<ProtectedRoute />}>
-                    <Route element={<Layout />}>
+                    <Route
+                        element={
+                            <Layout
+                                darkMode={mode}
+                                toggleTheme={toggleTheme}
+                            />
+                        }
+                    >
 
                         <Route
                             path="/"

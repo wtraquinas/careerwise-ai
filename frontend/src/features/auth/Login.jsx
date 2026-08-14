@@ -145,7 +145,7 @@ export default function Login() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#f5f7fb",
+                backgroundColor: "background.default",
                 px: 2,
                 py: 6,
             }}

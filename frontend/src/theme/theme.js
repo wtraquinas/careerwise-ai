@@ -1,22 +1,31 @@
 import { createTheme } from "@mui/material/styles";
 
-const theme = createTheme({
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#1976d2",
-    },
-    secondary: {
-      main: "#00bfa5",
-    },
-    background: {
-      default: "#f5f7fb",
-    },
-  },
+export const getTheme = (mode) =>
+    createTheme({
+        palette: {
+            mode,
 
-  shape: {
-    borderRadius: 12,
-  },
-});
+            primary: {
+                main:
+                    mode === "dark"
+                        ? "#90caf9"
+                        : "#1976d2",
+            },
 
-export default theme;
+            background: {
+                default:
+                    mode === "dark"
+                        ? "#121212"
+                        : "#f5f7fb",
+
+                paper:
+                    mode === "dark"
+                        ? "#1e1e1e"
+                        : "#ffffff",
+            },
+        },
+
+        shape: {
+            borderRadius: 10,
+        },
+    });

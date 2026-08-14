@@ -1,33 +1,47 @@
+import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom/client";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+
+import App from "./App.jsx";
+import QueryProvider from "./app/providers/QueryProvider.jsx";
+import { getTheme } from "./theme/theme.js";
 
 import "./index.css";
 
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+function Root() {
+    const [mode, setMode] = useState("light");
 
-import theme from "./theme/theme";
+    const theme = useMemo(
+        () => getTheme(mode),
+        [mode]
+    );
 
-import AppQueryProvider from "./app/providers/QueryProvider";
+    const toggleTheme = () => {
+        setMode((currentMode) =>
+            currentMode === "light"
+                ? "dark"
+                : "light"
+        );
+    };
 
-import AppRouter from "./app/router/AppRouter";
+    return (
+        <React.StrictMode>
+            <QueryProvider>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
 
-import { Toaster } from "react-hot-toast";
+                    <App
+                        mode={mode}
+                        toggleTheme={toggleTheme}
+                    />
+                </ThemeProvider>
+            </QueryProvider>
+        </React.StrictMode>
+    );
+}
 
-import { SnackbarProvider } from "notistack";
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <AppQueryProvider>
-
-        <SnackbarProvider>
-
-            <AppRouter />
-
-        </SnackbarProvider>
-
-        <Toaster position="top-right" />
-
-    </AppQueryProvider>
-  </ThemeProvider>
+ReactDOM.createRoot(
+    document.getElementById("root")
+).render(
+    <Root />
 );
