@@ -48,6 +48,18 @@ export const AIAPI = {
 
 
 // -------------------------
+// Access Requests API
+// -------------------------
+export const AccessRequestsAPI = {
+    create: (data) =>
+        api.post(
+            "/access-requests",
+            data
+        ),
+};
+
+
+// -------------------------
 // Auth API
 // -------------------------
 

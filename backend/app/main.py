@@ -31,6 +31,10 @@ from app.api.cover_letter import (
     router as cover_letter_router,
 )
 
+from app.api.access_requests import (
+    router as access_request_router
+)
+
 app = FastAPI(
     title="CareerWise API",
     version="1.0.0"
@@ -72,6 +76,10 @@ app.include_router(profile_router)
 
 app.include_router(
     cover_letter_router,
+)
+
+app.include_router(
+    access_request_router
 )
 
 @app.get("/api/v1/health")
