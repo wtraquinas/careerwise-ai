@@ -7,15 +7,56 @@ import {
     Typography,
 } from "@mui/material";
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { AuthAPI } from "../../shared/services/api";
 
 export default function Header() {
     const navigate = useNavigate();
 
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const loadCurrentUser = async () => {
+            try {
+                const response =
+                    await AuthAPI.getCurrentUser();
+
+                setUser(response.data);
+
+            } catch (error) {
+                console.error(
+                    "Failed to load current user:",
+                    error
+                );
+
+                localStorage.removeItem("token");
+
+                navigate("/login", {
+                    replace: true,
+                });
+            }
+        };
+
+        loadCurrentUser();
+    }, [navigate]);
+
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/login", { replace: true });
+
+        navigate("/login", {
+            replace: true,
+        });
     };
+
+    const userName =
+        user?.full_name ||
+        user?.email ||
+        "User";
+
+    const avatarLetter =
+        userName.charAt(0).toUpperCase();
 
     return (
         <AppBar
@@ -44,11 +85,11 @@ export default function Header() {
                     }}
                 >
                     <Typography>
-                        Antonio
+                        {userName}
                     </Typography>
 
                     <Avatar>
-                        A
+                        {avatarLetter}
                     </Avatar>
 
                     <Button
@@ -57,6 +98,7 @@ export default function Header() {
                     >
                         Logout
                     </Button>
+
                 </Box>
 
             </Toolbar>

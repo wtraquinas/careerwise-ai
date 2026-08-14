@@ -7,7 +7,7 @@ export function useCurrentUser() {
     return useQuery({
         queryKey: ["currentUser"],
         queryFn: async () => {
-            const response = await AuthAPI.getMe();
+            const response = await AuthAPI.getCurrentUser();
             return response.data;
         },
         enabled: !!token,

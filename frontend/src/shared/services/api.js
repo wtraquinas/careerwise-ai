@@ -76,6 +76,9 @@ export const AuthAPI = {
     changePassword(data) {
         return api.post("/auth/change-password", data);
     },
+    getCurrentUser() {
+        return api.get("/auth/me");
+    },
 };
 
 
