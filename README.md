@@ -24,7 +24,7 @@ The project is being developed as a portfolio-ready AI Engineering application f
 <center>
   <table>
     <td><img src="./images/CW Dashboard 20260814.jpg"></img></td>
-    <td><img src="./images/CW Career Coach 20260814.jpg"></img></td>
+    <td><img src="./images/CW Career Profile Settings 20260814.jpg"></img></td>
   </table>
 </center>
 
@@ -44,7 +44,7 @@ The project is being developed as a portfolio-ready AI Engineering application f
 <center>
   <table>
     <td><img src="./images/CW Applications 20260814.jpg"></img></td>
-    <td><img src="./images/CW Career Profile Settings 20260814.jpg"></img></td>
+    <td><img src="./images/CW Career Coach 20260814.jpg"></img></td>
   </table>
 </center>
 
